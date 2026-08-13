@@ -1,0 +1,15 @@
+# Obsidian 本機狀態（不該進版控：每台機器不同，會一直產生雜訊 diff）
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+.trash/
+
+# 系統檔
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 暫存
+*.tmp
+*.bak
+~$*
