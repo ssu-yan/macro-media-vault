@@ -10,11 +10,16 @@ V1 驗證任務：消費者信心對後續實質消費支出的預測力，是�
 --------------------------------------------------------------------
 需要的資料（從 FRED 下載 CSV，放到本檔同層的 data/ 資料夾）
     https://fred.stlouisfed.org/series/UMCSENT   → data/UMCSENT.csv
-    https://fred.stlouisfed.org/series/PCEC96    → data/PCEC96.csv
     https://fred.stlouisfed.org/series/UNRATE    → data/UNRATE.csv
     https://fred.stlouisfed.org/series/FEDFUNDS  → data/FEDFUNDS.csv
     https://fred.stlouisfed.org/series/DSPIC96   → data/DSPIC96.csv
+    https://fred.stlouisfed.org/series/PCE       → data/PCE.csv     （名目消費，1959 起）
+    https://fred.stlouisfed.org/series/PCEPI     → data/PCEPI.csv   （PCE 物價指數，1959 起）
 每個頁面右上角 Download → CSV，檔名不用改。
+
+PCEC96（FRED 內建的實質消費）只從 2007 年開始，不夠長，所以改用
+PCE ÷ PCEPI 自行實質化。若 data/ 裡只有 PCEC96.csv，腳本仍會執行，
+但會印出警告，且 2000–2012 那一段實際上只有 2008 年後的資料。
 
 執行：  python3 V1_backtest.py
 相依：  pandas, numpy（不需要 statsmodels，OLS 與 Newey-West 都自己算）
@@ -39,6 +44,9 @@ import pandas as pd
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 SEGMENTS = [
+    # UMCSENT 在 1978 年以前是季頻，1978 起才是月頻，所以最早一段從 1978 開始。
+    # 這一段是「碎片化之前」的基準線——媒體假說最關鍵的對照組。
+    ("1978-01", "1999-12", "1978–1999"),
     ("2000-01", "2012-12", "2000–2012"),
     ("2013-01", "2020-12", "2013–2020"),
     ("2021-01", "2026-12", "2021–2026"),
@@ -68,13 +76,35 @@ def load_fred(series_id):
     return s
 
 
+def load_real_pce():
+    """
+    實質個人消費支出（月）。
+
+    FRED 的 PCEC96 只從 2007-01 開始，會讓 2000–2012 那一段實際上變成
+    2008–2012（完全落在金融海嘯期間），分段比較因此失去意義。
+
+    所以優先用 PCE（名目，1959 起）÷ PCEPI（PCE 物價指數，1959 起）自行實質化，
+    兩者都不在時才退回 PCEC96。回傳 (序列, 來源說明)。
+    """
+    have_pce = os.path.exists(os.path.join(DATA_DIR, "PCE.csv"))
+    have_pi = os.path.exists(os.path.join(DATA_DIR, "PCEPI.csv"))
+    if have_pce and have_pi:
+        nominal = load_fred("PCE")
+        deflator = load_fred("PCEPI")
+        real = (nominal / deflator * 100).rename("PCEC96")
+        return real.dropna(), "PCE ÷ PCEPI（自行實質化，長歷史）"
+    real = load_fred("PCEC96")
+    return real, "PCEC96（FRED 內建，僅 2007 年起 ⚠️）"
+
+
 def build_dataset():
     umc = load_fred("UMCSENT")      # 密西根消費者信心（指數）
-    pce = load_fred("PCEC96")       # 實質個人消費支出（月，chained $）
+    pce, pce_src = load_real_pce()  # 實質個人消費支出（月）
     unrate = load_fred("UNRATE")    # 失業率
     ff = load_fred("FEDFUNDS")      # 聯邦資金利率
     inc = load_fred("DSPIC96")      # 實質可支配所得
 
+    print(f"實質消費序列來源：{pce_src}")
     df = pd.concat([umc, pce, unrate, ff, inc], axis=1).sort_index()
 
     # 解釋變數：信心的水準（標準化）與 12 個月變化

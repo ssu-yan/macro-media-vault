@@ -16,3 +16,7 @@ desktop.ini
 
 # 原始資料：應從來源重新下載，不進版控
 04-indicators/scripts/data/*.csv
+
+04-indicators/scripts/V1c_rolling.csv
+__pycache__/
+*.pyc

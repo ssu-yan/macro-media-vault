@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>情緒指標的增量資訊含量：1981–2025</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin:0; background:#f9f9f7; font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans TC", sans-serif; }
+  .viz-root {
+    color-scheme: light;
+    --surface-1:#fcfcfb; --plane:#f9f9f7;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --series-1:#2a78d6; --series-2:#eb6834;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) body { background:#0d0d0d; }
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:#1a1a19; --plane:#0d0d0d;
+      --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
+      --series-1:#3987e5; --series-2:#d95926;
+    }
+  }
+  :root[data-theme="dark"] body { background:#0d0d0d; }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:#1a1a19; --plane:#0d0d0d;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
+    --series-1:#3987e5; --series-2:#d95926;
+  }
+  .viz-root { max-width:920px; margin:0 auto; padding:28px 20px 40px; }
+  h1 { font-size:20px; line-height:1.35; margin:0 0 6px; color:var(--text-primary); font-weight:650; }
+  .sub { font-size:13.5px; line-height:1.6; color:var(--text-secondary); margin:0 0 4px; }
+  .verdict { font-size:14px; line-height:1.6; color:var(--text-primary); margin:14px 0 20px;
+             padding:12px 14px; background:var(--surface-1); border:1px solid var(--border); border-radius:8px; }
+  .panel { background:var(--surface-1); border:1px solid var(--border); border-radius:10px;
+           padding:16px 14px 8px; margin-bottom:14px; position:relative; }
+  .ptitle { font-size:14px; font-weight:600; color:var(--text-primary); margin:0 0 2px; padding-left:4px; }
+  .pnote { font-size:12px; color:var(--muted); margin:0 0 8px; padding-left:4px; }
+  svg { display:block; width:100%; height:auto; overflow:visible; }
+  .gl { stroke:var(--grid); stroke-width:1; }
+  .ax { stroke:var(--axis); stroke-width:1; }
+  .tick { fill:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }
+  .tip { position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
+         background:var(--surface-1); border:1px solid var(--border); border-radius:8px;
+         padding:8px 10px; font-size:12.5px; color:var(--text-primary);
+         box-shadow:0 2px 10px rgba(0,0,0,.12); white-space:nowrap; z-index:5; }
+  .tip b { font-variant-numeric:tabular-nums; }
+  .swatch { display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px; vertical-align:1px; }
+  details { margin-top:8px; }
+  summary { font-size:13px; color:var(--text-secondary); cursor:pointer; padding:6px 4px; }
+  table { border-collapse:collapse; font-size:12px; margin-top:8px; width:100%; }
+  th,td { text-align:right; padding:3px 8px; border-bottom:1px solid var(--grid); color:var(--text-secondary);
+          font-variant-numeric:tabular-nums; }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--text-primary); font-weight:600; }
+  .foot { font-size:12px; line-height:1.65; color:var(--muted); margin-top:16px; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <h1>情緒指標的增量資訊含量沒有衰退 — 1981–2025</h1>
+  <p class="sub">滾動 10 年視窗。「增量 R²」＝密西根消費者信心在利率、失業率、實質所得、消費動能之外，對未來 6 個月實質消費成長多解釋的變異。</p>
+
+  <div class="verdict">
+    <strong>如果媒體碎片化正在侵蝕情緒指標的資訊含量，上圖應該由左向右往下走。它沒有。</strong><br>
+    控制總體波動後，時間係數 <b>+0.0022/年（t = +2.08）</b> — 方向是<em>上升</em>，不是下降。
+  </div>
+
+  <div class="panel" id="p1">
+    <p class="ptitle"><span class="swatch" style="background:var(--series-1)"></span>情緒的增量 R²（對未來 6 個月實質消費成長）</p>
+    <p class="pnote">橫軸為 10 年視窗的結束時間</p>
+    <svg id="s1" viewBox="0 0 880 260" role="img" aria-label="滾動增量 R 平方，1981 至 2025，無下降趨勢"></svg>
+    <div class="tip" id="t1"></div>
+  </div>
+
+  <div class="panel" id="p2">
+    <p class="ptitle"><span class="swatch" style="background:var(--series-2)"></span>同期實質消費成長的標準差（總體波動）</p>
+    <p class="pnote">用來檢驗「解釋力隨波動起伏」的補救假說 — 相關係數為 <b>−0.25</b>，方向與直覺相反</p>
+    <svg id="s2" viewBox="0 0 880 200" role="img" aria-label="滾動消費成長標準差，1981 至 2025"></svg>
+    <div class="tip" id="t2"></div>
+  </div>
+
+  <details>
+    <summary>檢視資料表（每年一列）</summary>
+    <table id="tbl"><thead><tr><th>視窗結束</th><th>增量 R²</th><th>消費成長 sd</th></tr></thead><tbody></tbody></table>
+  </details>
+
+  <p class="foot">
+    資料：FRED（UMCSENT、PCE ÷ PCEPI、UNRATE、FEDFUNDS、DSPIC96），1978-01 起月頻，排除 2020-02 ~ 2020-09。<br>
+    滾動視窗高度重疊，有效自由度遠低於視窗數；t 值為 Newey-West HAC（lag 40），應視為方向性參考而非嚴格推論。
+  </p>
+</div>
+
+<script>
+const DATA = [{"d":"1981-12","r":0.0125,"v":2.947},{"d":"1982-03","r":0.0264,"v":2.938},{"d":"1982-06","r":0.0379,"v":2.95},{"d":"1982-09","r":0.0426,"v":2.957},{"d":"1982-12","r":0.0437,"v":2.992},{"d":"1983-03","r":0.043,"v":3.059},{"d":"1983-06","r":0.0513,"v":3.049},{"d":"1983-09","r":0.0554,"v":3.024},{"d":"1983-12","r":0.0446,"v":2.944},{"d":"1984-03","r":0.0626,"v":2.957},{"d":"1984-06","r":0.0884,"v":2.961},{"d":"1984-09","r":0.1123,"v":2.921},{"d":"1984-12","r":0.1251,"v":2.936},{"d":"1985-03","r":0.1593,"v":2.971},{"d":"1985-06","r":0.1548,"v":2.964},{"d":"1985-09","r":0.1402,"v":2.972},{"d":"1985-12","r":0.1418,"v":2.949},{"d":"1986-03","r":0.1458,"v":2.894},{"d":"1986-06","r":0.0858,"v":2.881},{"d":"1986-09","r":0.0534,"v":2.85},{"d":"1986-12","r":0.0531,"v":2.747},{"d":"1987-03","r":0.0472,"v":2.754},{"d":"1987-06","r":0.0419,"v":2.743},{"d":"1987-09","r":0.0507,"v":2.742},{"d":"1987-12","r":0.0513,"v":2.744},{"d":"1988-03","r":0.0494,"v":2.722},{"d":"1988-06","r":0.0373,"v":2.723},{"d":"1988-09","r":0.0236,"v":2.723},{"d":"1988-12","r":0.0133,"v":2.708},{"d":"1989-03","r":0.0051,"v":2.702},{"d":"1989-06","r":0.0068,"v":2.701},{"d":"1989-09","r":0.0039,"v":2.637},{"d":"1989-12","r":0.0087,"v":2.293},{"d":"1990-03","r":0.0344,"v":2.108},{"d":"1990-06","r":0.021,"v":2.205},{"d":"1990-09","r":0.0053,"v":2.394},{"d":"1990-12","r":0.0004,"v":2.39},{"d":"1991-03","r":0.0039,"v":2.371},{"d":"1991-06","r":0.004,"v":2.325},{"d":"1991-09","r":0.0015,"v":2.261},{"d":"1991-12","r":0.009,"v":2.257},{"d":"1992-03","r":0.0066,"v":2.239},{"d":"1992-06","r":0.0078,"v":2.228},{"d":"1992-09","r":0.0034,"v":2.213},{"d":"1992-12","r":0.0015,"v":2.182},{"d":"1993-03","r":0.0026,"v":2.082},{"d":"1993-06","r":0.0024,"v":2.013},{"d":"1993-09","r":0.0073,"v":1.993},{"d":"1993-12","r":0.0084,"v":1.986},{"d":"1994-03","r":0.0044,"v":1.963},{"d":"1994-06","r":0.0008,"v":1.958},{"d":"1994-09","r":0.0015,"v":1.909},{"d":"1994-12","r":0.0025,"v":1.886},{"d":"1995-03","r":0.0042,"v":1.825},{"d":"1995-06","r":0.0016,"v":1.803},{"d":"1995-09","r":0.0009,"v":1.776},{"d":"1995-12","r":0.0029,"v":1.775},{"d":"1996-03","r":0.0009,"v":1.693},{"d":"1996-06","r":0.0004,"v":1.641},{"d":"1996-09","r":0.0,"v":1.604},{"d":"1996-12","r":0.0005,"v":1.587},{"d":"1997-03","r":0.0,"v":1.552},{"d":"1997-06","r":0.0056,"v":1.613},{"d":"1997-09","r":0.0133,"v":1.613},{"d":"1997-12","r":0.036,"v":1.63},{"d":"1998-03","r":0.0546,"v":1.692},{"d":"1998-06","r":0.0581,"v":1.725},{"d":"1998-09","r":0.0603,"v":1.745},{"d":"1998-12","r":0.0583,"v":1.754},{"d":"1999-03","r":0.0744,"v":1.772},{"d":"1999-06","r":0.1094,"v":1.792},{"d":"1999-09","r":0.1421,"v":1.82},{"d":"1999-12","r":0.1545,"v":1.827},{"d":"2000-03","r":0.1599,"v":1.793},{"d":"2000-06","r":0.1543,"v":1.649},{"d":"2000-09","r":0.1068,"v":1.345},{"d":"2000-12","r":0.068,"v":1.33},{"d":"2001-03","r":0.0924,"v":1.373},{"d":"2001-06","r":0.1103,"v":1.296},{"d":"2001-09","r":0.0957,"v":1.307},{"d":"2001-12","r":0.0716,"v":1.348},{"d":"2002-03","r":0.0662,"v":1.366},{"d":"2002-06","r":0.0961,"v":1.38},{"d":"2002-09","r":0.1098,"v":1.4},{"d":"2002-12","r":0.0964,"v":1.39},{"d":"2003-03","r":0.095,"v":1.41},{"d":"2003-06","r":0.1001,"v":1.412},{"d":"2003-09","r":0.1066,"v":1.415},{"d":"2003-12","r":0.0948,"v":1.423},{"d":"2004-03","r":0.0776,"v":1.42},{"d":"2004-06","r":0.0788,"v":1.434},{"d":"2004-09","r":0.0546,"v":1.422},{"d":"2004-12","r":0.0338,"v":1.394},{"d":"2005-03","r":0.0315,"v":1.404},{"d":"2005-06","r":0.0411,"v":1.429},{"d":"2005-09","r":0.0395,"v":1.447},{"d":"2005-12","r":0.0391,"v":1.442},{"d":"2006-03","r":0.0597,"v":1.456},{"d":"2006-06","r":0.0593,"v":1.452},{"d":"2006-09","r":0.0629,"v":1.456},{"d":"2006-12","r":0.0716,"v":1.486},{"d":"2007-03","r":0.062,"v":1.509},{"d":"2007-06","r":0.0322,"v":1.485},{"d":"2007-09","r":0.0345,"v":1.551},{"d":"2007-12","r":0.0355,"v":1.589},{"d":"2008-03","r":0.0317,"v":1.664},{"d":"2008-06","r":0.1238,"v":1.907},{"d":"2008-09","r":0.1154,"v":2.046},{"d":"2008-12","r":0.1281,"v":2.113},{"d":"2009-03","r":0.1328,"v":2.101},{"d":"2009-06","r":0.1722,"v":2.062},{"d":"2009-09","r":0.1853,"v":1.997},{"d":"2009-12","r":0.1863,"v":1.949},{"d":"2010-03","r":0.1965,"v":1.94},{"d":"2010-06","r":0.1932,"v":1.926},{"d":"2010-09","r":0.1932,"v":1.917},{"d":"2010-12","r":0.2202,"v":1.919},{"d":"2011-03","r":0.2298,"v":1.917},{"d":"2011-06","r":0.2253,"v":1.898},{"d":"2011-09","r":0.1867,"v":1.873},{"d":"2011-12","r":0.1759,"v":1.871},{"d":"2012-03","r":0.1624,"v":1.878},{"d":"2012-06","r":0.1561,"v":1.876},{"d":"2012-09","r":0.1623,"v":1.871},{"d":"2012-12","r":0.1555,"v":1.859},{"d":"2013-03","r":0.165,"v":1.779},{"d":"2013-06","r":0.163,"v":1.741},{"d":"2013-09","r":0.162,"v":1.726},{"d":"2013-12","r":0.1674,"v":1.719},{"d":"2014-03","r":0.1969,"v":1.733},{"d":"2014-06","r":0.1877,"v":1.713},{"d":"2014-09","r":0.1873,"v":1.722},{"d":"2014-12","r":0.1795,"v":1.709},{"d":"2015-03","r":0.1575,"v":1.672},{"d":"2015-06","r":0.1403,"v":1.673},{"d":"2015-09","r":0.1454,"v":1.663},{"d":"2015-12","r":0.1587,"v":1.649},{"d":"2016-03","r":0.1508,"v":1.651},{"d":"2016-06","r":0.1467,"v":1.636},{"d":"2016-09","r":0.1457,"v":1.624},{"d":"2016-12","r":0.1311,"v":1.63},{"d":"2017-03","r":0.1115,"v":1.632},{"d":"2017-06","r":0.1146,"v":1.661},{"d":"2017-09","r":0.1262,"v":1.674},{"d":"2017-12","r":0.1434,"v":1.666},{"d":"2018-03","r":0.1683,"v":1.6},{"d":"2018-06","r":0.1292,"v":1.364},{"d":"2018-09","r":0.1081,"v":1.192},{"d":"2018-12","r":0.1109,"v":1.053},{"d":"2019-03","r":0.0893,"v":1.035},{"d":"2019-06","r":0.1035,"v":1.034},{"d":"2019-09","r":0.0919,"v":1.648},{"d":"2019-12","r":0.0177,"v":4.432},{"d":"2020-11","r":0.0281,"v":4.67},{"d":"2021-02","r":0.0306,"v":4.905},{"d":"2021-05","r":0.0014,"v":4.918},{"d":"2021-08","r":0.0005,"v":4.916},{"d":"2021-11","r":0.0002,"v":4.913},{"d":"2022-02","r":0.0,"v":4.912},{"d":"2022-05","r":0.0011,"v":4.911},{"d":"2022-08","r":0.011,"v":4.913},{"d":"2022-11","r":0.0312,"v":4.909},{"d":"2023-02","r":0.0534,"v":4.908},{"d":"2023-05","r":0.0697,"v":4.909},{"d":"2023-08","r":0.0806,"v":4.911},{"d":"2023-11","r":0.0887,"v":4.91},{"d":"2024-02","r":0.085,"v":4.914},{"d":"2024-05","r":0.0813,"v":4.919},{"d":"2024-08","r":0.0828,"v":4.923},{"d":"2024-11","r":0.0803,"v":4.916},{"d":"2025-02","r":0.0774,"v":4.909},{"d":"2025-05","r":0.0714,"v":4.902},{"d":"2025-08","r":0.0681,"v":4.902},{"d":"2025-12","r":0.0634,"v":4.901}];
+
+function draw(svgId, tipId, key, color, fmt, yTicks) {
+  const svg = document.getElementById(svgId), tip = document.getElementById(tipId);
+  const W = 880, H = svg.viewBox.baseVal.height;
+  const M = {t:10, r:14, b:26, l:46};
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  const vals = DATA.map(d => d[key]);
+  const ymax = Math.max(...yTicks, ...vals) * 1.02, ymin = 0;
+  const x = i => M.l + (i / (DATA.length - 1)) * iw;
+  const y = v => M.t + ih - ((v - ymin) / (ymax - ymin)) * ih;
+  let s = '';
+  yTicks.forEach(t => {
+    s += `<line class="gl" x1="${M.l}" x2="${W-M.r}" y1="${y(t)}" y2="${y(t)}"/>`;
+    s += `<text class="tick" x="${M.l-8}" y="${y(t)+4}" text-anchor="end">${fmt(t)}</text>`;
+  });
+  s += `<line class="ax" x1="${M.l}" x2="${W-M.r}" y1="${M.t+ih}" y2="${M.t+ih}"/>`;
+  DATA.forEach((d,i) => {
+    if (d.d.endsWith('-12') && (+d.d.slice(0,4)) % 5 === 0)
+      s += `<text class="tick" x="${x(i)}" y="${M.t+ih+18}" text-anchor="middle">${d.d.slice(0,4)}</text>`;
+  });
+  s += `<path d="${DATA.map((d,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(d[key]).toFixed(1)).join(' ')}"
+        fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  s += `<line id="${svgId}-cross" class="ax" x1="0" x2="0" y1="${M.t}" y2="${M.t+ih}" opacity="0"/>`;
+  s += `<circle id="${svgId}-dot" r="4.5" fill="${color}" stroke="var(--surface-1)" stroke-width="2" opacity="0"/>`;
+  s += `<rect x="${M.l}" y="${M.t}" width="${iw}" height="${ih}" fill="transparent" id="${svgId}-hit"/>`;
+  svg.innerHTML = s;
+  const cross = svg.querySelector(`#${svgId}-cross`), dot = svg.querySelector(`#${svgId}-dot`);
+  svg.querySelector(`#${svgId}-hit`).addEventListener('mousemove', e => {
+    const r = svg.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width * W;
+    let i = Math.round((px - M.l) / iw * (DATA.length - 1));
+    i = Math.max(0, Math.min(DATA.length - 1, i));
+    const d = DATA[i];
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('opacity', .5);
+    dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(d[key])); dot.setAttribute('opacity', 1);
+    tip.innerHTML = `<b>${d.d}</b> 結束的 10 年<br>增量 R² <b>${d.r.toFixed(3)}</b><br>消費成長 sd <b>${d.v.toFixed(2)}</b>`;
+    tip.style.opacity = 1;
+    tip.style.left = Math.min(Math.max(8, e.clientX - r.left - 60), r.width - 150) + 'px';
+    tip.style.top = '44px';
+  });
+  svg.querySelector(`#${svgId}-hit`).addEventListener('mouseleave', () => {
+    tip.style.opacity = 0; cross.setAttribute('opacity', 0); dot.setAttribute('opacity', 0);
+  });
+}
+
+draw('s1','t1','r','var(--series-1)', v => v.toFixed(2), [0,0.05,0.10,0.15,0.20]);
+draw('s2','t2','v','var(--series-2)', v => v.toFixed(0), [0,1,2,3,4,5]);
+
+const tb = document.querySelector('#tbl tbody');
+DATA.filter(d => d.d.endsWith('-12')).forEach(d => {
+  tb.insertAdjacentHTML('beforeend',
+    `<tr><td>${d.d}</td><td>${d.r.toFixed(3)}</td><td>${d.v.toFixed(2)}</td></tr>`);
+});
+</script>
+</body>
+</html>
