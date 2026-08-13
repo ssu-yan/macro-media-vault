@@ -72,7 +72,15 @@
 - 每支節點四段：**狀態 / 分岔 / 觸發訊號 / 下游影響**
 - 分岔標 A/B/C 與機率，並寫出它把哪個下游推向哪一個分岔
 
+## 版本管理
+
+- Git repo：`https://github.com/ssu-yan/macro-media-vault`（private）
+- 位置：`C:\Users\Wendy\OneDrive\macro-media-vault`（OneDrive 同步 + GitHub 備份）
+- **改完筆記記得 `git add -A && git commit -m "..."` 再 `git push`**
+- ⚠️ OneDrive 也在同步 `.git`。多台裝置輪流用時，離開前先 commit 並等 OneDrive
+  跑完（工作列圖示打勾）再去另一台開。**不要兩台同時開著編輯。**
+
 ## 待辦
 
-- [ ] 設定 Git remote 並推上遠端
 - [ ] 補台灣／亞洲市場對照數據（目前證據以美國與全球為主）
+- [ ] （選用，無時程）S3/S9 直接檢驗 — 方法與判準見 [[S9-市場二階量改變]] 文末
