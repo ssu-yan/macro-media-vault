@@ -20,3 +20,7 @@ desktop.ini
 04-indicators/scripts/V1c_rolling.csv
 __pycache__/
 *.pyc
+
+# OneDrive 衝突檔
+*-*[0-9].md
+*_conflict*
