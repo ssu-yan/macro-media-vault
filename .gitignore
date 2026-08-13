@@ -13,3 +13,6 @@ desktop.ini
 *.tmp
 *.bak
 ~$*
+
+# 原始資料：應從來源重新下載，不進版控
+04-indicators/scripts/data/*.csv
