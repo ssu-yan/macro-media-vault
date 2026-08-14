@@ -165,12 +165,23 @@ def apply_caps(nodes, epis):
     return capped, killed
 
 
-def propagate(nodes, root, max_depth=5, min_conf=0.05):
-    """深度優先列舉所有路徑，回傳 {target_id: [path, ...]}。"""
+def propagate(nodes, root, max_depth=5, min_conf=0.05, strong=0.50):
+    """深度優先列舉所有路徑。
+
+    回傳 (results, pruned)。pruned 記錄「自身信心夠強、卻因為上游路徑
+    稀釋而被信心下限濾掉」的邊——G1 的教訓：這種漏失在輸出裡完全看不見，
+    比方向錯更危險，因為沒有任何紅字提醒你少了什麼。
+    """
     results = {}
+    pruned = {}
+    truncated = {}
 
     def walk(nid, path, conf, sign, lo, hi, seen):
         if len(path) - 1 >= max_depth:
+            for e in nodes[nid]["edges"]:
+                ec = e.get("_eff", float(e.get("confidence", 0)))
+                if ec >= strong and e["to"] not in seen:
+                    truncated.setdefault((nid, e["to"]), ec)
             return
         for e in nodes[nid]["edges"]:
             tgt = e["to"]
@@ -181,6 +192,10 @@ def propagate(nodes, root, max_depth=5, min_conf=0.05):
                 continue
             c = conf * ec
             if c < min_conf:
+                if ec >= strong:
+                    prev = pruned.get((nid, tgt))
+                    if prev is None or c > prev[1]:
+                        pruned[(nid, tgt)] = (ec, c)
                 continue
             lag = e.get("lag_months") or [0, 0]
             s = sign * int(e.get("sign", 1))
@@ -191,7 +206,7 @@ def propagate(nodes, root, max_depth=5, min_conf=0.05):
             walk(tgt, p, c, s, lo + lag[0], hi + lag[1], seen | {tgt})
 
     walk(root, [(root, None)], 1.0, 1, 0, 0, {root})
-    return results
+    return results, pruned, truncated
 
 
 def horizon_of(months):
@@ -213,9 +228,27 @@ def summarize(nodes, results):
     """
     out = []
     for tgt, paths in results.items():
+        # 一條路徑的時窗會**橫跨多個時間層**，用單一時點分層一定會偏：
+        #   用下界 → 反向力量被系統性前推（G1 的兩個錯誤）
+        #   用中點 → 快速的主推力被系統性後推（立即層整個空掉）
+        # 正解是按**重疊比例**分配：一個時窗 [lo,hi] 對某一層的貢獻，
+        # 等於它在該層內佔了自己多少比例。
         buckets = {}
         for p in paths:
-            buckets.setdefault(horizon_of(p["lag"][0]), []).append(p)
+            lo, hi = p["lag"]
+            span = max(hi - lo, 1e-9)
+            for bi, (blo, bhi, _) in enumerate(HORIZONS):
+                ov = max(0.0, min(hi, bhi) - max(lo, blo))
+                if hi == lo:                      # 零寬時窗
+                    w = 1.0 if blo <= lo < bhi else 0.0
+                else:
+                    w = ov / span
+                if w <= 0.02:                     # 幾乎沒重疊就不計
+                    continue
+                q = dict(p)
+                q["conf"] = p["conf"] * w
+                q["w"] = w
+                buckets.setdefault(bi, []).append(q)
         for hi, ps in buckets.items():
             up = [p for p in ps if p["sign"] > 0]
             dn = [p for p in ps if p["sign"] < 0]
@@ -243,7 +276,38 @@ def fmt_path(nodes, rec):
     return " → ".join(labels)
 
 
-def report(nodes, root, summ, results, max_depth, min_conf, capped, killed):
+def diagnose_missing(nodes, results, pruned, truncated, max_depth, min_conf):
+    """把「沒出現在輸出裡」拆成三種原因。
+
+    G1 抓到 4 個 outcome 沒被覆蓋，我一開始以為都是信心稀釋。
+    實際上三種原因混在一起，處置方式完全不同：
+      · 孤兒     → 圖不完整，要補邊
+      · 深度截斷 → 中間層太深，要拉直或提高 --depth
+      · 信心稀釋 → 路徑太長太弱，要檢討邊的信心值
+    分不清楚就會修錯地方。
+    """
+    reached = set(results.keys())
+    inbound = {}
+    for n in nodes.values():
+        for e in n["edges"]:
+            inbound.setdefault(e["to"], []).append(n["id"])
+    orphan, deep, diluted = [], [], []
+    for n in nodes.values():
+        if n.get("type") != "outcome" or n["id"] in reached:
+            continue
+        if not inbound.get(n["id"]):
+            orphan.append(n)
+        elif any(t == n["id"] for _, t in truncated):
+            deep.append(n)
+        elif any(t == n["id"] for _, t in pruned):
+            diluted.append(n)
+        else:
+            deep.append(n)   # 上游未達，多半也是深度或斷鏈
+    return orphan, deep, diluted
+
+
+def report(nodes, root, summ, results, max_depth, min_conf, capped, killed,
+           pruned, truncated):
     r = nodes[root]
     print()
     print("=" * 78)
@@ -302,6 +366,49 @@ def report(nodes, root, summ, results, max_depth, min_conf, capped, killed):
             if line.strip():
                 print(f"    {line.strip()}")
         print()
+
+    no_in = [n for n in nodes.values()
+             if n.get("type") not in ("event", "external")
+             and not any(e["to"] == n["id"] for m in nodes.values() for e in m["edges"])]
+    if no_in:
+        print()
+        print("■ 🩺 圖健康檢查：以下節點沒有任何入邊（斷鏈）")
+        for n in no_in:
+            print("    · %s [%s] (%s)" % (n.get("label", n["id"]), n["id"], n.get("type")))
+        print("  → 通道節點斷鏈時，它下游的所有結論都到不了，且不會出現在漏失診斷裡。")
+
+    orphan, deep, diluted = diagnose_missing(
+        nodes, results, pruned, truncated, max_depth, min_conf)
+    if orphan or deep or diluted or pruned or truncated:
+        print()
+        print("■ ⚠️ 漏失診斷")
+        print()
+        print("  G1 的教訓：強結論靜靜消失，輸出裡看不到，比方向錯更危險。")
+        print("  三種漏失原因不同，處置方式也不同：")
+        if orphan:
+            print()
+            print("  【孤兒】沒有任何邊指向它 → 圖不完整，要補邊")
+            for n in orphan:
+                print("    · %s [%s]" % (n.get("label", n["id"]), n["id"]))
+        if deep:
+            print()
+            print("  【深度截斷】上游太深，%d 跳內走不到 → 中間層要拉直，或提高 --depth"
+                  % max_depth)
+            for n in deep:
+                print("    · %s [%s]" % (n.get("label", n["id"]), n["id"]))
+        if truncated:
+            print()
+            print("  【被深度截斷的強邊】（自身信心 ≥ 0.50）")
+            for (a_, b_), ec in sorted(truncated.items(), key=lambda x: -x[1]):
+                print("    %s → %s（該邊 %.2f）" % (a_, b_, ec))
+        if pruned:
+            print()
+            print("  【信心稀釋】自身夠強但累積後低於下限 %.2f" % min_conf)
+            for (a_, b_), (ec, c) in sorted(pruned.items(), key=lambda x: -x[1][0]):
+                print("    %s → %s（該邊 %.2f，累積後 %.3f）" % (a_, b_, ec, c))
+        print()
+        print("  → 提高 --depth 或降低 --min-conf 可以看到它們，")
+        print("     但那是診斷，不是解法。解法是補邊或拉直中間層。")
 
     if capped or killed:
         print()
@@ -376,14 +483,15 @@ def main():
 
     epis = load_epistemic()
     capped, killed = apply_caps(nodes, epis)
-    results = propagate(nodes, hit, a.depth, a.min_conf)
+    results, pruned, truncated = propagate(nodes, hit, a.depth, a.min_conf)
     summ = summarize(nodes, results)
     if a.json:
         print(json.dumps({"root": hit, "results": [
             {k: v for k, v in s.items() if k != "best"} for s in summ]},
             ensure_ascii=False, indent=2))
     else:
-        report(nodes, hit, summ, results, a.depth, a.min_conf, capped, killed)
+        report(nodes, hit, summ, results, a.depth, a.min_conf, capped, killed,
+               pruned, truncated)
 
 
 if __name__ == "__main__":
