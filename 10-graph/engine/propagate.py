@@ -113,6 +113,28 @@ def load_graph(nodes_dir):
     return nodes
 
 
+def load_snapshot(path):
+    """從單一 JSON 快照載入整張圖。
+
+    排程執行時，每次都是全新的雲端 session，裝置橋接不保證在
+    （使用者電腦沒開就一定沒有）。所以圖必須有一個不依賴 vault 的攜帶格式，
+    否則無人值守的前瞻登記根本跑不起來。
+    """
+    d = json.load(open(path, encoding="utf-8"))
+    nodes = {n["id"]: n for n in d["nodes"]}
+    for n in nodes.values():
+        n.setdefault("edges", [])
+        n.setdefault("_counter", "")
+    for n in list(nodes.values()):
+        for e in n["edges"]:
+            if e["to"] not in nodes:
+                nodes[e["to"]] = {"id": e["to"], "label": e["to"],
+                                  "type": "external", "domain": "圖外",
+                                  "status": "未建檔", "aliases": [],
+                                  "edges": [], "_counter": ""}
+    return nodes, d.get("epistemic")
+
+
 def find_node(nodes, query):
     q = query.strip().lower()
     for nid, n in nodes.items():
@@ -444,11 +466,16 @@ def main():
     ap.add_argument("--depth", type=int, default=5)
     ap.add_argument("--min-conf", type=float, default=0.05)
     ap.add_argument("--nodes", default=NODES_DIR)
+    ap.add_argument("--snapshot", help="改從 JSON 快照載入（無 vault 時使用）")
     ap.add_argument("--list", action="store_true", help="列出圖中所有節點")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
 
-    nodes = load_graph(a.nodes)
+    snap_epis = None
+    if a.snapshot:
+        nodes, snap_epis = load_snapshot(a.snapshot)
+    else:
+        nodes = load_graph(a.nodes)
     if not nodes:
         print(f"在 {a.nodes} 找不到任何節點")
         sys.exit(1)
@@ -481,7 +508,9 @@ def main():
             print(f"  {h:<24}{nodes[h].get('label','')}")
         sys.exit(3)
 
-    epis = load_epistemic()
+    epis = snap_epis or load_epistemic()
+    for k, v in DEFAULT_EPIS.items():
+        epis.setdefault(k, v)
     capped, killed = apply_caps(nodes, epis)
     results, pruned, truncated = propagate(nodes, hit, a.depth, a.min_conf)
     summ = summarize(nodes, results)

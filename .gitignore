@@ -30,3 +30,5 @@ __pycache__/
 04-indicators/scripts/V6_measures.csv
 
 _to_delete/
+
+10-graph/engine/graph_snapshot.json
