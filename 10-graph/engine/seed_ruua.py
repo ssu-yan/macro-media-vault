@@ -23,14 +23,10 @@ import sys
 #   breaks       什麼情況下這條邊不成立
 # ---------------------------------------------------------------
 
-N = []
+from graphlib import Graph
 
-def node(id, label, type, domain, status, aliases, body, edges=(), date=None,
-         counter=(), watch=()):
-    N.append(dict(id=id, label=label, type=type, domain=domain, status=status,
-                  date=date, aliases=list(aliases), body=body,
-                  edges=[dict(zip(("to","s","lag","c","why","ev","breaks"), e)) for e in edges],
-                  counter=list(counter), watch=list(watch)))
+G = Graph("seed_ruua.py")
+node = G.node
 
 # ============================= 事件 =============================
 
@@ -178,8 +174,7 @@ node("CH-FISCAL","財政擴張：能源補貼與國防支出","channel","政治"
 
 # ============================= 結果 =============================
 
-def out(id,label,domain,body,edges=(),counter=(),watch=(),aliases=()):
-    node(id,label,"outcome",domain,"可觀察",list(aliases),body,edges,counter=counter,watch=watch)
+out = G.out
 
 out("OUT-WHEAT-PRICE","小麥價格","糧食",
     "CBOT 小麥期貨。2022/3 創歷史高點後於年內大幅回落。",
@@ -266,65 +261,7 @@ out("OUT-US-LNG-EXPORT","美國 LNG 出口","能源",
 
 # ---------------------------------------------------------------
 
-def yaml_list(xs, indent=0):
-    if not xs:
-        return " []"
-    pad = " " * indent
-    return "\n" + "\n".join(f"{pad}- {x}" for x in xs)
-
-def write(outdir):
-    os.makedirs(outdir, exist_ok=True)
-    for n in N:
-        fm = ["---", f"id: {n['id']}", f"label: {n['label']}",
-              f"type: {n['type']}", f"domain: {n['domain']}",
-              f"status: {n['status']}"]
-        if n["date"]:
-            fm.append(f"date: {n['date']}")
-        fm.append("aliases:" + yaml_list(n["aliases"], 2))
-        if n["edges"]:
-            fm.append("edges:")
-            for e in n["edges"]:
-                fm.append(f"  - to: {e['to']}")
-                fm.append(f"    sign: {e['s']}")
-                fm.append(f"    lag_months: [{e['lag'][0]}, {e['lag'][1]}]")
-                fm.append(f"    confidence: {e['c']}")
-                fm.append(f"    mechanism: \"{e['why']}\"")
-                fm.append(f"    evidence: \"{e['ev']}\"")
-                fm.append(f"    breaks_if: \"{e['breaks']}\"")
-        else:
-            fm.append("edges: []")
-        fm.append("---")
-
-        body = ["", f"# {n['label']}", "",
-                f"`{n['id']}` ｜ {n['type']} ｜ {n['domain']} ｜ 狀態：{n['status']}", "",
-                n["body"], ""]
-        if n["edges"]:
-            body += ["## 下游邊", "",
-                     "| 指向 | 方向 | 時滯(月) | 信心 | 機制 | 證據 | 何時不成立 |",
-                     "|---|---|---|---|---|---|---|"]
-            for e in n["edges"]:
-                arrow = "推升 ↑" if e["s"] > 0 else "抑制 ↓"
-                body.append(f"| [[{e['to']}]] | {arrow} | {e['lag'][0]}–{e['lag'][1]} | "
-                            f"{e['c']} | {e['why']} | {e['ev']} | {e['breaks']} |")
-            body.append("")
-        if n["counter"]:
-            body += ["## ⚠️ 反向力量與已知限制", ""]
-            body += [f"{c}\n" for c in n["counter"]]
-        if n["watch"]:
-            body += ["## 觀察指標", ""] + [f"- {w}" for w in n["watch"]] + [""]
-        body += ["---", "", "> 本檔由 `engine/seed_ruua.py` 產生，**請勿直接編輯**。",
-                 "> 要改內容請改該腳本再重跑。", ""]
-
-        with open(os.path.join(outdir, f"{n['id']}.md"), "w", encoding="utf-8") as f:
-            f.write("\n".join(fm) + "\n".join(body))
-    print(f"已產生 {len(N)} 個節點 → {outdir}")
-    ids = {n["id"] for n in N}
-    dangling = sorted({e["to"] for n in N for e in n["edges"]} - ids)
-    if dangling:
-        print("⚠️ 指向圖外的邊（正常，若指向媒體沙盤節點）：", dangling)
-
-
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "..", "nodes")
-    write(os.path.abspath(d))
+    G.write(os.path.abspath(d))
