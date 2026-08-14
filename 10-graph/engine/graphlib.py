@@ -72,7 +72,18 @@ class Graph:
                       encoding="utf-8") as f:
                 f.write("\n".join(fm) + "\n".join(body))
         print("已產生 %d 個節點 → %s" % (len(self.N), outdir))
+        # 檢查斷鏈時要看**整個 nodes 目錄**，不能只看本腳本自己的節點——
+        # 跨領域重用節點是圖譜的重點功能，若因此每次都跳假警報，
+        # 真正的斷鏈就會淹沒在雜訊裡而沒人看。
         ids = {n["id"] for n in self.N}
+        for f in os.listdir(outdir):
+            if f.endswith(".md"):
+                ids.add(f[:-3])
         dangling = sorted({e["to"] for n in self.N for e in n["edges"]} - ids)
         if dangling:
-            print("⚠️ 指向圖外的邊（若指向沙盤節點屬正常）：", dangling)
+            print("⚠️ 指向不存在的節點：", dangling)
+            print("   （若為沙盤節點如 S3/L4 屬正常；否則是斷鏈）")
+        reused = sorted({e["to"] for n in self.N for e in n["edges"]}
+                        - {n["id"] for n in self.N} - set(dangling))
+        if reused:
+            print("↔ 重用其他子圖的節點 %d 個：%s" % (len(reused), "、".join(reused)))

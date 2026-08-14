@@ -10,9 +10,17 @@
 | 層 | 內容 | 入口 |
 |---|---|---|
 | **沙盤** | 單一主題（媒體結構）的深度推導，帶認識論狀態表 | [[沙盤總覽]] |
-| **圖譜** | 跨領域事件因果網路 + 傳導引擎（政治／經濟／戰爭／能源／AI）| [[README-圖譜規格]] |
+| **圖譜** | 76 節點、三領域（俄烏／AI／美中）+ 傳導引擎 | [[README-圖譜規格]] |
 
-圖譜用法：`cd 10-graph/engine && python3 propagate.py 俄烏戰爭`
+圖譜用法：
+
+```bash
+cd 10-graph/engine
+python3 propagate.py 俄烏戰爭
+python3 propagate.py "AI 資本支出"
+python3 propagate.py 關稅升級
+python3 propagate.py --list          # 看所有節點
+```
 
 ---
 
