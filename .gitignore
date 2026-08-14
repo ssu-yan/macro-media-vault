@@ -25,3 +25,6 @@ __pycache__/
 *-*[0-9].md
 *_conflict*
 
+
+04-indicators/scripts/V6_rolling.json
+04-indicators/scripts/V6_measures.csv
