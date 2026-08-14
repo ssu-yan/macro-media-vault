@@ -39,6 +39,39 @@ except ImportError:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NODES_DIR = os.path.normpath(os.path.join(HERE, "..", "nodes"))
+EPIS_FILE = os.path.normpath(os.path.join(HERE, "..", "epistemic.yaml"))
+
+DEFAULT_EPIS = {
+    "evidence_caps": {"已實現": 1.00, "有先例": 0.75, "理論推導": 0.50},
+    "status_caps": {"事實": 1.00, "進行中": 0.80, "證據混雜": 0.50,
+                    "未檢驗": 0.45, "難以檢驗": 0.35, "已證偽": 0.00},
+    "nodes": {},
+}
+
+
+def load_epistemic(path=EPIS_FILE):
+    if not os.path.exists(path):
+        return dict(DEFAULT_EPIS)
+    d = yaml.safe_load(open(path, encoding="utf-8")) or {}
+    for k, v in DEFAULT_EPIS.items():
+        d.setdefault(k, v)
+    return d
+
+
+def cap_for(epis, ends, evidence):
+    """回傳 (上限, 綁定原因)。
+
+    規則：**對一條邊的信心，不可能高於你對它兩端的信心。**
+    上限 = min(證據等級, 起點節點狀態, 終點節點狀態)
+    """
+    ev = str(evidence).split("—")[0].strip()
+    caps = [(epis["evidence_caps"].get(ev, 1.0), "證據等級「%s」" % ev)]
+    for nid, role in ends:
+        st = epis.get("nodes", {}).get(nid)
+        if st:
+            caps.append((epis["status_caps"].get(st, 1.0),
+                         "%s節點 %s 為「%s」" % (role, nid, st)))
+    return min(caps, key=lambda x: x[0])
 
 HORIZONS = [(0, 3, "立即（0–3 個月）"),
             (3, 12, "短期（3–12 個月）"),
@@ -103,6 +136,35 @@ def find_node(nodes, query):
 
 # ---------------- 傳導 ----------------
 
+def apply_caps(nodes, epis):
+    """把認識論狀態套用成邊的信心上限，就地寫入 e['_eff']。
+
+    這是圖譜層與沙盤層的接縫：沙盤裡某個節點被證偽或標為證據混雜之後，
+    **圖譜這邊指向它的邊必須自動跟著降**，否則兩層會脫節。
+    """
+    capped, killed = [], []
+    for n in nodes.values():
+        for e in n["edges"]:
+            declared = float(e.get("confidence", 0))
+            lim, why = cap_for(epis, [(n["id"], "起點"), (e["to"], "終點")],
+                               e.get("evidence", ""))
+            eff = min(declared, lim)
+            e["_eff"] = eff
+            if eff <= 0:
+                killed.append((n["id"], e["to"], declared, why))
+            elif eff < declared:
+                capped.append((n["id"], e["to"], declared, eff, why))
+
+    # 守門：指向「圖外且未評狀態」的節點，等於一條沒有上限的邊。
+    # 這是最容易讓兩層脫節的漏洞，所以要主動報出來。
+    unlisted = sorted({e["to"] for n in nodes.values() for e in n["edges"]
+                       if nodes.get(e["to"], {}).get("type") == "external"
+                       and e["to"] not in epis.get("nodes", {})})
+    for u in unlisted:
+        print(f"⚠️ {u} 指向圖外且未在 epistemic.yaml 評定狀態——這條邊沒有上限保護。")
+    return capped, killed
+
+
 def propagate(nodes, root, max_depth=5, min_conf=0.05):
     """深度優先列舉所有路徑，回傳 {target_id: [path, ...]}。"""
     results = {}
@@ -114,7 +176,10 @@ def propagate(nodes, root, max_depth=5, min_conf=0.05):
             tgt = e["to"]
             if tgt in seen:          # 防環
                 continue
-            c = conf * float(e.get("confidence", 0))
+            ec = e.get("_eff", float(e.get("confidence", 0)))
+            if ec <= 0:              # 下游已證偽：整條邊移除
+                continue
+            c = conf * ec
             if c < min_conf:
                 continue
             lag = e.get("lag_months") or [0, 0]
@@ -178,7 +243,7 @@ def fmt_path(nodes, rec):
     return " → ".join(labels)
 
 
-def report(nodes, root, summ, results, max_depth, min_conf):
+def report(nodes, root, summ, results, max_depth, min_conf, capped, killed):
     r = nodes[root]
     print()
     print("=" * 78)
@@ -238,6 +303,21 @@ def report(nodes, root, summ, results, max_depth, min_conf):
                 print(f"    {line.strip()}")
         print()
 
+    if capped or killed:
+        print()
+        print("■ 🔒 認識論上限生效的邊")
+        print()
+        print("  規則：對一條邊的信心，不可能高於你對它兩端的信心。")
+        print("  上限 = min(證據等級, 起點節點狀態, 終點節點狀態)")
+        print()
+        for a_, b_, d_, e_, why in capped:
+            print("  %s → %s" % (a_, b_))
+            print("      宣告 %.2f → 生效 %.2f　（受限於%s）" % (d_, e_, why))
+        for a_, b_, d_, why in killed:
+            print("  %s → %s" % (a_, b_))
+            print("      宣告 %.2f → ❌ 整條邊移除（%s）" % (d_, why))
+
+    print()
     print("=" * 78)
     print("讀法")
     print("=" * 78)
@@ -294,6 +374,8 @@ def main():
             print(f"  {h:<24}{nodes[h].get('label','')}")
         sys.exit(3)
 
+    epis = load_epistemic()
+    capped, killed = apply_caps(nodes, epis)
     results = propagate(nodes, hit, a.depth, a.min_conf)
     summ = summarize(nodes, results)
     if a.json:
@@ -301,7 +383,7 @@ def main():
             {k: v for k, v in s.items() if k != "best"} for s in summ]},
             ensure_ascii=False, indent=2))
     else:
-        report(nodes, hit, summ, results, a.depth, a.min_conf)
+        report(nodes, hit, summ, results, a.depth, a.min_conf, capped, killed)
 
 
 if __name__ == "__main__":
