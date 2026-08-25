@@ -37,6 +37,17 @@ except ImportError:
     print("需要 pyyaml：pip install pyyaml")
     sys.exit(1)
 
+ENGINE_VERSION = "1.1"
+# 1.0 → 1.1（2026-08-14，G3 協議試跑後）
+#   · 反向力量段落改為排序輸出：修正同一輸入跑兩次得到不同位元組的問題
+#   · 認不得的證據等級改為回退到最嚴格上限並警告（原本靜默回退到最寬鬆的 1.0）
+#   · 報表標頭印出引擎版本
+#   **三項都不改變任何數值判斷**；已用全圖 76 個節點逐一比對驗證。
+#   2026-08-14 之前凍結的輸出是 1.0 產生的，在 1.1 下不會逐字重現（標頭多一行、
+#   反向力量段落順序不同），這是預期內的，不是紀錄被動過。
+
+_UNKNOWN_EVIDENCE = set()
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 NODES_DIR = os.path.normpath(os.path.join(HERE, "..", "nodes"))
 EPIS_FILE = os.path.normpath(os.path.join(HERE, "..", "epistemic.yaml"))
@@ -65,7 +76,18 @@ def cap_for(epis, ends, evidence):
     上限 = min(證據等級, 起點節點狀態, 終點節點狀態)
     """
     ev = str(evidence).split("—")[0].strip()
-    caps = [(epis["evidence_caps"].get(ev, 1.0), "證據等級「%s」" % ev)]
+    ec = epis["evidence_caps"]
+    if ev in ec:
+        caps = [(ec[ev], "證據等級「%s」" % ev)]
+    else:
+        # **認不得的證據等級一律回退到最嚴格的上限，並且要出聲。**
+        # 原本的寫法是 .get(ev, 1.0)，認不得就回退到最寬鬆的 1.0——
+        # 也就是說，把證據等級**寫錯**的邊會拿到**沒有上限保護**的待遇。
+        # 這與認識論上限機制的用意正好相反：不確定的時候應該更保守，不是更放縱。
+        # （2026-08-14 試跑發現）
+        strict = min(ec.values()) if ec else 1.0
+        caps = [(strict, "證據等級「%s」無法辨識，已回退到最嚴格上限" % ev)]
+        _UNKNOWN_EVIDENCE.add(ev)
     for nid, role in ends:
         st = epis.get("nodes", {}).get(nid)
         if st:
@@ -338,7 +360,15 @@ def report(nodes, root, summ, results, max_depth, min_conf, capped, killed,
         print(f"發生時間：{r['date']}")
     print(f"領域：{r.get('domain','?')} ｜ 狀態：{r.get('status','?')}")
     print(f"參數：最大深度 {max_depth} 跳、信心下限 {min_conf}")
+    print(f"引擎版本：{ENGINE_VERSION}")
     print("=" * 78)
+
+    if _UNKNOWN_EVIDENCE:
+        print()
+        print("■ ⚠️ 無法辨識的證據等級（這些邊已回退到最嚴格上限）")
+        for ev in sorted(_UNKNOWN_EVIDENCE):
+            print("    · 「%s」" % ev)
+        print("  → 證據等級必須是 epistemic 的 evidence_caps 之一，否則上限保護形同虛設。")
 
     outcomes = [s for s in summ if s["type"] in ("outcome", "external")]
     inter = [s for s in summ if s["type"] not in ("outcome", "external")]
@@ -376,7 +406,12 @@ def report(nodes, root, summ, results, max_depth, min_conf, capped, killed,
               f"時窗 {s['lag'][0]}–{s['lag'][1]}m")
 
     # 沿路節點的反向力量
-    touched = {root} | set(results.keys())
+    # sorted() 是必要的，不是美觀問題。集合的迭代順序取決於字串雜湊，
+    # 而 Python 預設每個行程都重新隨機化雜湊種子——不排序的話，同一份快照
+    # 跑兩次會得到順序不同的輸出。G3 協議要求把輸出「原封不動」凍結，
+    # 而凍結的意義在於**事後可以重跑來稽核有沒有被動過**。
+    # 輸出不可重現，凍結就只是一段無法查證的文字。（2026-08-14 試跑發現）
+    touched = sorted({root} | set(results.keys()))
     warns = [(nodes[i].get("label", i), nodes[i]["_counter"])
              for i in touched if nodes.get(i, {}).get("_counter")]
     print()

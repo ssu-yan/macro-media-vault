@@ -22,7 +22,10 @@ __pycache__/
 *.pyc
 
 # OneDrive 衝突檔
-*-*[0-9].md
+*-[0-9].md
+*-衝突*
+*- 副本*.md
+*-Copy.md
 *_conflict*
 
 
