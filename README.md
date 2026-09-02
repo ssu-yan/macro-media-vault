@@ -70,7 +70,7 @@ python3 propagate.py --list          # 看所有節點
 | `04-indicators/` | 驗證方法與已完成的結果 |
 | `05-sources/` | 證據基礎與可信度評估 |
 | `memory/decisions/` | After-action 決策紀錄 |
-| `sop/` | 範本 |
+| `sop/` | 範本、[[end-of-work-commit-check]] 收工檢查 |
 | `99-inbox/` | 隨手丟 |
 | `10-graph/` | **事件因果圖譜**：節點 + 傳導引擎 → [[README-圖譜規格]] |
 
@@ -95,10 +95,30 @@ python3 propagate.py --list          # 看所有節點
 ## 版本管理
 
 - Git repo：`https://github.com/ssu-yan/macro-media-vault`（private）
-- 位置：`C:\Users\Wendy\OneDrive\macro-media-vault`（OneDrive 同步 + GitHub 備份）
-- **改完筆記記得 `git add -A && git commit -m "..."` 再 `git push`**
-- ⚠️ OneDrive 也在同步 `.git`。多台裝置輪流用時，離開前先 commit 並等 OneDrive
-  跑完（工作列圖示打勾）再去另一台開。**不要兩台同時開著編輯。**
+- 位置：`C:\Users\Wendy\macro-media-vault`（**已於 2026-09-01 移出 OneDrive**）
+- 備份只有一套：Git ＋ 私有 GitHub repo。不再使用雲端同步。
+
+### 收工前必跑（三十秒）
+
+```powershell
+git status --short                    # 有輸出就往下做
+git add -A
+git commit -m "描述今天做了什麼"
+git push
+git log origin/main..main --oneline   # 沒輸出 = 已全部推送
+```
+
+**Obsidian Git 的自動 commit 只在 Obsidian 開著時運作**，關掉 app 就停。
+2026-09-01 曾因此讓一整天 1,109 行的工作處於無備份狀態（含 579 行的 G3 掃描紀錄）。
+完整流程與故障排除見 `sop/end-of-work-commit-check.md`。
+
+### 鐵則
+
+- **不要把這個 vault 放回 OneDrive 或任何雲端同步資料夾。** 雲端同步會與 Git 爭搶
+  `.git/` 的寫入權，造成 `index.lock` 殘留、`HEAD.lock` 卡住、`appendAtomically` 寫入失敗、
+  gc 無法清理。2026-09-01 這四種錯誤全部發生過。
+- 要搬移 vault，用**剪下貼上把資料夾搬走**，絕不要用「取消勾選同步資料夾」——那會收走本機檔案。
+- 多台裝置輪流用：離開前 commit + push，另一台開始前 `git pull`。不要同時編輯。
 
 ## 待辦
 
