@@ -1,0 +1,228 @@
+{
+  "main": {
+    "id": "b436f056f3ec0d9b",
+    "type": "split",
+    "children": [
+      {
+        "id": "ba47846811791035",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cbd24d93f55aba9d",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "a039093669913848",
+    "type": "split",
+    "children": [
+      {
+        "id": "6f0a00e0d9b5be27",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cf60d02d1dcb22a4",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "0c38c7651698185f",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "a9d6ea121cf428cc",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "a98b935b861a91e8",
+    "type": "split",
+    "children": [
+      {
+        "id": "d08182c2f502c467",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3fdaf1fba5b3624d",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "00-index/沙盤總覽.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "6a223d4c01736ce8",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "00-index/沙盤總覽.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "49f145f29f70714a",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "b73a6bb93b915c00",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "f0f6997f4db4a38d",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "00-index/沙盤總覽.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "cbd24d93f55aba9d",
+  "lastOpenFiles": [
+    "sop",
+    "99-inbox",
+    "_backup-nodes-20260820/ST-UA-FARMLAND.md",
+    "_backup-nodes-20260820/OUT-EU-RENEW-CAPEX.md",
+    "_backup-nodes-20260820/CH-TRADE-COST.md",
+    "_backup-nodes-20260820/CH-LABOR-COST.md",
+    "_backup-nodes-20260820/CH-CAPEX-DEMAND.md",
+    "_backup-nodes-20260820",
+    "03-scenarios",
+    "memory/decisions",
+    "memory",
+    "_backup-engine-20260820/__pycache__",
+    "_backup-engine-20260820/seed_ai.py",
+    "_backup-engine-20260820",
+    "04-indicators/scripts/__pycache__",
+    "04-indicators/scripts",
+    "memory/decisions/2026-09-01-G3第二次調參核可.md",
+    "10-graph/nodes/ST-POWER-BUILD.md",
+    "_backup-nodes-20260820/ST-SUPPLY-RELOCATE.md",
+    "memory/decisions/G3-掃描-2026-08-31.md",
+    "memory/decisions/2026-08-25-G3首筆有效登記.md",
+    "sop/~$ter-action-template.md",
+    "memory/decisions/~$-掃描-2026-08-31.md",
+    "memory/decisions/G3-調參提案-2026-09-01.md",
+    "10-graph/backtest/G3-登記-2026-08-25.md",
+    "10-graph/nodes/ST-MARINE-WAR-RISK.md",
+    "10-graph/nodes/ST-REDSEA-REROUTE.md",
+    "10-graph/nodes/ST-HORMUZ-DISRUPTION.md",
+    "10-graph/nodes/EV-MIDEAST-CHOKEPOINT-CRISIS.md",
+    "10-graph/nodes/ST-RU-EXPORT-INFRA-DAMAGE.md",
+    "_backup-nodes-20260820/EV-AI-CAPEX-CYCLE.md",
+    "_backup-nodes-20260820/EV-RU-UA-2022.md",
+    "_backup-nodes-20260820/EV-TAIWAN-STRAIT-CRISIS.md",
+    "_backup-nodes-20260820/EV-CHIP-CONTROL-TIGHTEN.md",
+    "_backup-nodes-20260820/EV-TARIFF-ESCALATION.md",
+    "_backup-nodes-20260820/OUT-ECB-RATE.md",
+    "Untitled 1.canvas",
+    "Untitled.canvas"
+  ]
+}
