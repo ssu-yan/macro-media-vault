@@ -1,0 +1,3126 @@
+{
+ "generated_note": "由 export_snapshot.py 產生；供無 vault 的排程 session 使用",
+ "node_count": 88,
+ "nodes": [
+  {
+   "id": "CH-CAPEX-DEMAND",
+   "label": "資本支出的需求乘數",
+   "type": "channel",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "資本支出乘數"
+   ],
+   "edges": [
+    {
+     "to": "OUT-GDP-CAPEX",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.75,
+     "mechanism": "直接計入固定投資",
+     "evidence": "已實現 — 已成為部分經濟體成長的顯著貢獻項",
+     "breaks_if": "投資轉往海外"
+    },
+    {
+     "to": "OUT-DC-REIT",
+     "sign": 1,
+     "lag_months": [
+      0,
+      18
+     ],
+     "confidence": 0.7,
+     "mechanism": "資料中心資產需求與租金",
+     "evidence": "已實現",
+     "breaks_if": "供給過剩"
+    },
+    {
+     "to": "OUT-REAL-RATES",
+     "sign": 1,
+     "lag_months": [
+      12,
+      48
+     ],
+     "confidence": 0.4,
+     "mechanism": "大規模投資需求推升資金需求",
+     "evidence": "理論推導 — 效果可能被儲蓄過剩淹沒",
+     "breaks_if": "資金供給充裕"
+    }
+   ],
+   "_counter": "**資本支出的貢獻有一個內建的反轉風險：它是水準效應，不是成長效應。** 一旦資本支出停在高原期，它對 GDP 成長的貢獻就歸零，即使絕對金額仍然很高。這一點在討論「AI 撐起經濟成長」時經常被搞混。"
+  },
+  {
+   "id": "CH-CAPEX-DUPLICATE",
+   "label": "重複建設的資本支出",
+   "type": "channel",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "重複建設",
+    "產能重複"
+   ],
+   "edges": [
+    {
+     "to": "OUT-GDP-CAPEX",
+     "sign": 1,
+     "lag_months": [
+      6,
+      36
+     ],
+     "confidence": 0.6,
+     "mechanism": "短期計入固定投資，推升成長",
+     "evidence": "已實現",
+     "breaks_if": "投資未落實"
+    },
+    {
+     "to": "OUT-CAPITAL-EFFICIENCY",
+     "sign": -1,
+     "lag_months": [
+      24,
+      84
+     ],
+     "confidence": 0.55,
+     "mechanism": "長期看是同樣產出用了更多資本",
+     "evidence": "理論推導",
+     "breaks_if": "重複產能被需求成長吸收"
+    }
+   ],
+   "_counter": "**這條通道的短期與長期方向相反，而且這不是矛盾，是同一件事的兩面：** 重複建設在建的時候是 GDP 的加項，建完之後是資本效率的減項。圖用兩條不同時滯的邊表達，但**讀的人很容易只看到自己想看的那一條。**"
+  },
+  {
+   "id": "CH-ELEC-COST",
+   "label": "電力成本傳導",
+   "type": "channel",
+   "domain": "能源",
+   "status": "進行中",
+   "aliases": [
+    "電力成本"
+   ],
+   "edges": [
+    {
+     "to": "OUT-CORP-MARGINS",
+     "sign": -1,
+     "lag_months": [
+      6,
+      30
+     ],
+     "confidence": 0.45,
+     "mechanism": "電力密集產業成本上升",
+     "evidence": "理論推導 — 電力佔多數產業成本比重不高",
+     "breaks_if": "可轉嫁或佔比太小"
+    },
+    {
+     "to": "OUT-ELEC-PRICE",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.6,
+     "mechanism": "需求增量直接反映",
+     "evidence": "有先例",
+     "breaks_if": "供給彈性充足"
+    }
+   ],
+   "_counter": "電力佔多數產業成本的比重其實很低（通常個位數百分比），所以這條通道對總體毛利率的影響**可能小到測不出來**。放進圖裡是為了完整性，不是因為它重要。"
+  },
+  {
+   "id": "CH-ENERGY-SUPPLY",
+   "label": "歐洲能源供給衝擊",
+   "type": "channel",
+   "domain": "能源",
+   "status": "已緩解",
+   "aliases": [
+    "能源供給",
+    "天然氣短缺"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EU-GAS-PRICE",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.95,
+     "mechanism": "供需失衡直接反映在現貨與期貨",
+     "evidence": "已實現 — 2022/8 TTF 逼近 340 歐元",
+     "breaks_if": "替代供給即時到位"
+    },
+    {
+     "to": "OUT-OIL-PRICE",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.55,
+     "mechanism": "氣轉油替代與整體能源溢價",
+     "evidence": "已實現",
+     "breaks_if": "替代有限"
+    },
+    {
+     "to": "CH-INPUT-COST",
+     "sign": 1,
+     "lag_months": [
+      1,
+      12
+     ],
+     "confidence": 0.85,
+     "mechanism": "能源是工業與農業的核心投入",
+     "evidence": "已實現",
+     "breaks_if": "能源密集產業外移完成"
+    },
+    {
+     "to": "OUT-EU-GDP",
+     "sign": -1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.7,
+     "mechanism": "能源成本衝擊壓抑生產與消費",
+     "evidence": "已實現 — 2022-23 歐洲工業產出下滑",
+     "breaks_if": "財政補貼完全吸收"
+    },
+    {
+     "to": "OUT-EUR-USD",
+     "sign": -1,
+     "lag_months": [
+      1,
+      12
+     ],
+     "confidence": 0.45,
+     "mechanism": "能源進口帳單暴增惡化貿易條件",
+     "evidence": "已實現 — 2022 歐元跌破平價",
+     "breaks_if": "能源價格回落"
+    },
+    {
+     "to": "ST-SPR-DEMAND",
+     "sign": 1,
+     "lag_months": [
+      2,
+      12
+     ],
+     "confidence": 0.85,
+     "mechanism": "供給衝擊本身觸發政策反應與需求破壞（負回饋）",
+     "evidence": "已實現 — 2022/3 IEA 協調釋儲、OPEC+ 增產、歐洲工業減產",
+     "breaks_if": "政治上無法釋儲且需求無彈性"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "CH-FISCAL",
+   "label": "財政擴張：能源補貼與國防支出",
+   "type": "channel",
+   "domain": "政治",
+   "status": "進行中",
+   "aliases": [
+    "財政擴張",
+    "國防支出",
+    "能源補貼"
+   ],
+   "edges": [
+    {
+     "to": "OUT-DEFENSE-STOCKS",
+     "sign": 1,
+     "lag_months": [
+      0,
+      36
+     ],
+     "confidence": 0.85,
+     "mechanism": "國防預算上修的直接受益",
+     "evidence": "已實現 — 2022 後歐洲國防股大漲",
+     "breaks_if": "預算承諾未落實為訂單"
+    },
+    {
+     "to": "OUT-EU-CPI",
+     "sign": 1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.35,
+     "mechanism": "財政擴張的需求側推力",
+     "evidence": "理論推導 — 效果小且有爭議",
+     "breaks_if": "財政乘數低"
+    },
+    {
+     "to": "OUT-EU-GDP",
+     "sign": 1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.55,
+     "mechanism": "補貼支撐可支配所得與需求",
+     "evidence": "已實現",
+     "breaks_if": "補貼規模不足"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "CH-FOOD-PRICE",
+   "label": "全球糧價傳導",
+   "type": "channel",
+   "domain": "糧食",
+   "status": "已緩解",
+   "aliases": [
+    "糧價",
+    "食品價格"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EU-CPI",
+     "sign": 1,
+     "lag_months": [
+      3,
+      12
+     ],
+     "confidence": 0.75,
+     "mechanism": "食品是 CPI 的重要分項",
+     "evidence": "已實現",
+     "breaks_if": "補貼與價格管制"
+    },
+    {
+     "to": "OUT-EM-FOOD-STRESS",
+     "sign": 1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.7,
+     "mechanism": "糧食進口國的財政與社會壓力",
+     "evidence": "有先例 — 2008、2011 阿拉伯之春",
+     "breaks_if": "國際援助與補貼到位"
+    }
+   ],
+   "_counter": "糧價對已開發國家 CPI 的影響遠小於對進口依賴型新興市場的影響。同一條邊在不同地區的強度差三倍以上——**這張圖目前沒有處理地區異質性，是已知的結構性缺陷。**"
+  },
+  {
+   "id": "CH-GRAIN-SUPPLY",
+   "label": "穀物供給衝擊",
+   "type": "channel",
+   "domain": "糧食",
+   "status": "已緩解",
+   "aliases": [
+    "小麥供給",
+    "穀物供給"
+   ],
+   "edges": [
+    {
+     "to": "OUT-WHEAT-PRICE",
+     "sign": 1,
+     "lag_months": [
+      0,
+      3
+     ],
+     "confidence": 0.9,
+     "mechanism": "供給預期下修推升期貨價格",
+     "evidence": "已實現 — 2022/3 小麥期貨創高",
+     "breaks_if": "其他產區增產補足"
+    },
+    {
+     "to": "CH-FOOD-PRICE",
+     "sign": 1,
+     "lag_months": [
+      1,
+      9
+     ],
+     "confidence": 0.8,
+     "mechanism": "穀物是食品價格的上游投入",
+     "evidence": "已實現",
+     "breaks_if": "傳導被補貼吸收"
+    }
+   ],
+   "_counter": "價格在 2022 年 3 月見高後於年內大幅回落。**期貨市場對供給衝擊的反應通常在數週內就過度反映，然後修正。** 這條邊的方向可靠，持續性不可靠。"
+  },
+  {
+   "id": "CH-INDEX-CONCENTRATION",
+   "label": "指數集中度上升",
+   "type": "channel",
+   "domain": "市場",
+   "status": "已發生",
+   "aliases": [
+    "指數集中度",
+    "市值集中"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EQUITY-CONCENTRATION",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.85,
+     "mechanism": "直接定義關係",
+     "evidence": "已實現",
+     "breaks_if": "漲勢擴散"
+    },
+    {
+     "to": "OUT-REAL-RATES",
+     "sign": 1,
+     "lag_months": [
+      12,
+      48
+     ],
+     "confidence": 0.25,
+     "mechanism": "估值對利率敏感度上升是結果非原因",
+     "evidence": "理論推導 — 因果方向可疑",
+     "breaks_if": "無關"
+    }
+   ],
+   "_counter": "**集中度上升與本 vault 沙盤層的 [[S3-信念離散度上升]] 方向相反。** S3 預測離散度上升、相關性下降；指數集中度上升通常伴隨相關性上升。V6 的結果（2005 年後相關性回升至 0.55）與集中度敘事一致，與 S3 的媒體敘事不一致。**這是兩層之間一個真實的張力，不是矛盾——但值得記著。**"
+  },
+  {
+   "id": "CH-INPUT-COST",
+   "label": "企業投入成本上升",
+   "type": "channel",
+   "domain": "經濟",
+   "status": "已緩解",
+   "aliases": [
+    "投入成本",
+    "生產成本"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EU-CPI",
+     "sign": 1,
+     "lag_months": [
+      3,
+      12
+     ],
+     "confidence": 0.85,
+     "mechanism": "成本推動型通膨",
+     "evidence": "已實現 — 2022 歐元區 HICP 破 10%",
+     "breaks_if": "企業吸收毛利不轉嫁"
+    },
+    {
+     "to": "CH-REAL-INCOME",
+     "sign": -1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.75,
+     "mechanism": "物價上漲侵蝕實質購買力",
+     "evidence": "已實現",
+     "breaks_if": "名目薪資同步上漲"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "CH-INPUT-PRICE",
+   "label": "投入品價格",
+   "type": "channel",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "投入品價格",
+    "中間財成本"
+   ],
+   "edges": [
+    {
+     "to": "OUT-US-CPI",
+     "sign": 1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.45,
+     "mechanism": "生產者價格傳導至消費者",
+     "evidence": "已實現",
+     "breaks_if": "毛利吸收"
+    },
+    {
+     "to": "OUT-CORP-MARGINS",
+     "sign": -1,
+     "lag_months": [
+      0,
+      18
+     ],
+     "confidence": 0.5,
+     "mechanism": "成本上升壓縮毛利",
+     "evidence": "已實現",
+     "breaks_if": "可轉嫁"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "CH-LABOR-COST",
+   "label": "勞動成本",
+   "type": "channel",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "勞動成本",
+    "工資"
+   ],
+   "edges": [
+    {
+     "to": "OUT-CORP-MARGINS",
+     "sign": -1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.55,
+     "mechanism": "工資是最大的成本項",
+     "evidence": "已實現",
+     "breaks_if": "生產力同步提升"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "CH-PRODUCTIVITY",
+   "label": "生產力傳導",
+   "type": "channel",
+   "domain": "經濟",
+   "status": "假設",
+   "aliases": [
+    "生產力傳導"
+   ],
+   "edges": [
+    {
+     "to": "OUT-PRODUCTIVITY-STAT",
+     "sign": 1,
+     "lag_months": [
+      24,
+      84
+     ],
+     "confidence": 0.4,
+     "mechanism": "效率提升最終進入統計",
+     "evidence": "理論推導 — 歷史上通用技術的生產力效果遲到數十年",
+     "breaks_if": "統計無法捕捉或效果不存在"
+    },
+    {
+     "to": "OUT-CORP-MARGINS",
+     "sign": 1,
+     "lag_months": [
+      18,
+      60
+     ],
+     "confidence": 0.45,
+     "mechanism": "同樣產出所需成本下降",
+     "evidence": "理論推導",
+     "breaks_if": "競爭把節省的成本讓渡給客戶"
+    }
+   ],
+   "_counter": "**這個節點是整張圖裡最重要、也最沒有證據的一個。** 如果 AI 的總體意義最終來自生產力，那麼上面所有 capex 通道都只是序曲；但生產力效果目前**完全沒有出現在統計裡**，而且歷史先例（電力、電腦）顯示它可能遲到數十年。時滯下界設 24 個月已經是樂觀的。"
+  },
+  {
+   "id": "CH-REAL-INCOME",
+   "label": "家庭實質所得下降",
+   "type": "channel",
+   "domain": "經濟",
+   "status": "已緩解",
+   "aliases": [
+    "實質所得",
+    "購買力"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EU-GDP",
+     "sign": -1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.7,
+     "mechanism": "消費是 GDP 最大組成",
+     "evidence": "已實現",
+     "breaks_if": "儲蓄釋出支撐消費"
+    }
+   ],
+   "_counter": "2022-23 年歐美的超額儲蓄顯著緩衝了這條邊。實質所得下降並沒有立刻造成消費崩跌——這一點跟本 vault 的 [[S5-情緒與支出脫鉤]] 觀察到的現象是同一件事。"
+  },
+  {
+   "id": "CH-RISK-PREMIUM",
+   "label": "地緣風險溢價",
+   "type": "channel",
+   "domain": "市場",
+   "status": "進行中",
+   "aliases": [
+    "地緣風險溢價",
+    "風險溢價"
+   ],
+   "edges": [
+    {
+     "to": "OUT-GOLD",
+     "sign": 1,
+     "lag_months": [
+      0,
+      18
+     ],
+     "confidence": 0.55,
+     "mechanism": "避險資產需求",
+     "evidence": "有先例",
+     "breaks_if": "實質利率主導"
+    },
+    {
+     "to": "OUT-DEFENSE-STOCKS",
+     "sign": 1,
+     "lag_months": [
+      0,
+      36
+     ],
+     "confidence": 0.7,
+     "mechanism": "國防預算與訂單預期",
+     "evidence": "已實現",
+     "breaks_if": "預算未落實"
+    },
+    {
+     "to": "OUT-TW-EQUITY",
+     "sign": -1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.55,
+     "mechanism": "風險溢價直接壓縮本地估值",
+     "evidence": "有先例 — 歷次緊張期已觀察到",
+     "breaks_if": "已充分定價"
+    },
+    {
+     "to": "OUT-SEMI-STOCKS",
+     "sign": -1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.4,
+     "mechanism": "供應鏈單點風險被重新定價",
+     "evidence": "有先例",
+     "breaks_if": "市場忽略"
+    }
+   ],
+   "_counter": "**地緣風險溢價的半衰期通常很短。** 歷史上多數地緣事件的市場影響在數週到數月內消退，除非它實際改變了現金流。這條通道的所有邊都應該預期**幅度大但持續性差**——而圖沒有表達持續性的能力。"
+  },
+  {
+   "id": "CH-SHIPPING-COST",
+   "label": "航運與保險成本",
+   "type": "channel",
+   "domain": "經濟",
+   "status": "已緩解",
+   "aliases": [
+    "航運成本",
+    "保險費"
+   ],
+   "edges": [
+    {
+     "to": "CH-INPUT-COST",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.6,
+     "mechanism": "運輸成本進入商品到岸價",
+     "evidence": "已實現",
+     "breaks_if": "運費回落"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "CH-TRADE-COST",
+   "label": "貿易成本",
+   "type": "channel",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "貿易成本",
+    "到岸成本"
+   ],
+   "edges": [
+    {
+     "to": "OUT-US-CPI",
+     "sign": 1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.5,
+     "mechanism": "成本傳導至消費者物價",
+     "evidence": "已實現但幅度有爭議 — 承擔方分配長期未有定論",
+     "breaks_if": "由進口商或出口商吸收"
+    },
+    {
+     "to": "CH-INPUT-PRICE",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.65,
+     "mechanism": "中間財成本上升",
+     "evidence": "已實現",
+     "breaks_if": "可替代來源"
+    }
+   ],
+   "_counter": "關稅的最終負擔分配是**實證上長期爭議**的問題。0.50 的信心反映爭議本身，不是我的猶豫。"
+  },
+  {
+   "id": "EV-AI-AGENT-DEPLOY",
+   "label": "AI 代理人進入生產環境",
+   "type": "event",
+   "domain": "AI",
+   "status": "進行中",
+   "date": "2025-01-01",
+   "aliases": [
+    "ai 代理人",
+    "ai agent",
+    "agentic ai",
+    "自主代理"
+   ],
+   "edges": [
+    {
+     "to": "ST-TASK-SUBSTITUTION",
+     "sign": 1,
+     "lag_months": [
+      6,
+      36
+     ],
+     "confidence": 0.55,
+     "mechanism": "特定白領任務可被端到端替代",
+     "evidence": "理論推導 — 目前僅有零星個案",
+     "breaks_if": "代理人可靠度不足以承擔責任"
+    },
+    {
+     "to": "CH-PRODUCTIVITY",
+     "sign": 1,
+     "lag_months": [
+      12,
+      60
+     ],
+     "confidence": 0.45,
+     "mechanism": "若替代成立，單位產出所需人時下降",
+     "evidence": "理論推導",
+     "breaks_if": "生產力統計捕捉不到"
+    },
+    {
+     "to": "S4-敘事加速",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.3,
+     "mechanism": "大量資金由讀相似資訊源的代理人管理",
+     "evidence": "理論推導 — S4 在沙盤中未檢驗",
+     "breaks_if": "代理人策略高度分化"
+    }
+   ],
+   "_counter": "**歷史上通用技術的生產力效果幾乎都遲到很久。** 電力、電腦都出現過數十年的「生產力悖論」。Solow 那句「電腦時代到處看得見，就是不在生產力統計裡」講的正是這個。所以這個節點下游的所有邊，時滯都設得很長、信心都設得很低——**如果它們錯，最可能的錯法是「方向對但太早」。**"
+  },
+  {
+   "id": "EV-AI-CAPEX-CYCLE",
+   "label": "超大規模 AI 資本支出週期",
+   "type": "event",
+   "domain": "AI",
+   "status": "進行中",
+   "date": "2023-01-01",
+   "aliases": [
+    "ai 資本支出",
+    "ai capex",
+    "資料中心投資",
+    "超大規模投資",
+    "hyperscaler capex"
+   ],
+   "edges": [
+    {
+     "to": "ST-COMPUTE-DEMAND",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.9,
+     "mechanism": "資本支出直接轉為算力採購",
+     "evidence": "已實現 — 2023-2026 加速器出貨與資料中心開工量",
+     "breaks_if": "資本支出計畫大幅下修"
+    },
+    {
+     "to": "CH-CAPEX-DEMAND",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.85,
+     "mechanism": "營建、設備、電力設施的實體需求",
+     "evidence": "已實現",
+     "breaks_if": "投資轉為海外或閒置產能吸收"
+    },
+    {
+     "to": "ST-POWER-CONSTRAINT",
+     "sign": 1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.8,
+     "mechanism": "單一園區用電量級距躍升，超出既有電網規劃",
+     "evidence": "已實現 — 多國出現併網排隊",
+     "breaks_if": "電網容量充裕"
+    }
+   ],
+   "_counter": "**這條線最大的風險是它太容易測量，因而被過度重視。** 資本支出是實體、可見、可統計的，所以分析容易集中在這裡；但如果 AI 的經濟意義最終來自生產力而非建設，那麼把注意力放在 capex 就是在看錯地方。這張圖對 capex 通道的信心較高（已實現），對生產力通道的信心較低（理論推導）——**那反映的是證據狀態，不是重要性排序。**"
+  },
+  {
+   "id": "EV-CHIP-CONTROL-TIGHTEN",
+   "label": "半導體出口管制收緊",
+   "type": "event",
+   "domain": "政治",
+   "status": "進行中",
+   "date": "2022-10-07",
+   "aliases": [
+    "晶片管制收緊",
+    "出口管制",
+    "entity list",
+    "半導體管制"
+   ],
+   "edges": [
+    {
+     "to": "ST-EXPORT-CONTROL",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.9,
+     "mechanism": "直接的法規效果",
+     "evidence": "已實現",
+     "breaks_if": "管制放寬"
+    },
+    {
+     "to": "ST-DUAL-SYSTEM",
+     "sign": 1,
+     "lag_months": [
+      12,
+      60
+     ],
+     "confidence": 0.6,
+     "mechanism": "技術標準與供應鏈分岔為兩套",
+     "evidence": "理論推導 — 目前僅部分領域出現",
+     "breaks_if": "互通性維持"
+    },
+    {
+     "to": "ST-TW-CONCENTRATION",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.45,
+     "mechanism": "管制強化了既有樞紐的不可替代性",
+     "evidence": "理論推導",
+     "breaks_if": "替代產能建成"
+    },
+    {
+     "to": "ST-DOMESTIC-SUBSIDY",
+     "sign": 1,
+     "lag_months": [
+      6,
+      36
+     ],
+     "confidence": 0.8,
+     "mechanism": "各國以補貼建立本土產能",
+     "evidence": "已實現 — 多國已立法",
+     "breaks_if": "財政緊縮"
+    },
+    {
+     "to": "S7-政策不確定性溢價",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.45,
+     "mechanism": "出口管制與關稅同屬貿易政策工具，管制清單擴大同樣以政策文本形式擴散。但 Fed 的 TPU 指數建構並未明說涵蓋出口管制，故本條為類比推導",
+     "evidence": "理論推導",
+     "breaks_if": "管制措施的文本擴散不進入政策不確定性指數"
+    }
+   ],
+   "_counter": "**俄烏子圖的制裁節點給過完全一樣的教訓：管制改變流向與價差，不必然改變總量。** 那次我高估了制裁對石油供給的效果。這裡的對應風險是高估管制對算力取得的效果——受限方會轉向效率路線、走私、或第三地採購。已在 AI 子圖的 `ST-EXPORT-CONTROL` 節點寫明。"
+  },
+  {
+   "id": "EV-MIDEAST-CHOKEPOINT-CRISIS",
+   "label": "波灣—紅海航道軍事扼制",
+   "type": "event",
+   "domain": "戰爭",
+   "status": "進行中",
+   "date": "2026-08-11",
+   "aliases": [
+    "荷姆茲封鎖",
+    "波灣航道扼制",
+    "紅海航道危機",
+    "hormuz blockade",
+    "red sea crisis"
+   ],
+   "edges": [
+    {
+     "to": "ST-HORMUZ-DISRUPTION",
+     "sign": 1,
+     "lag_months": [
+      0,
+      3
+     ],
+     "confidence": 0.85,
+     "mechanism": "海軍封鎖與攔檢直接降低該水道可通行運能。2024 年經荷姆茲的石油流量約 2,000 萬 b/d，約當全球石油液體消費 20%、全球海運石油貿易逾四分之一；全球約五分之一的 LNG 貿易亦經此（主要為卡達）",
+     "evidence": "已實現",
+     "breaks_if": "封鎖解除且通行量回到常態"
+    },
+    {
+     "to": "ST-MARINE-WAR-RISK",
+     "sign": 1,
+     "lag_months": [
+      0,
+      3
+     ],
+     "confidence": 0.85,
+     "mechanism": "商船在交戰水域遭實體攻擊（2026-08-11 Vela Nova、Tihamah），承保人依實際損失重新定價戰險",
+     "evidence": "已實現",
+     "breaks_if": "攻擊停止且保費回落"
+    },
+    {
+     "to": "ST-REDSEA-REROUTE",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.7,
+     "mechanism": "曼德海峽 2018 年通過約 620 萬 b/d 原油與成品油、約佔海運石油貿易 9%。商船在該水道遇襲時船東改繞好望角",
+     "evidence": "有先例",
+     "breaks_if": "護航有效使航線維持"
+    },
+    {
+     "to": "CH-RISK-PREMIUM",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.6,
+     "mechanism": "區域軍事衝突進入資產風險定價",
+     "evidence": "有先例",
+     "breaks_if": "市場視為已定價"
+    }
+   ],
+   "_counter": "**這個節點的下游效果高度取決於扼制的形式與持續時間**（攔檢／部分封鎖／全面封閉、數週／數月／數年），而圖沒有能力表達這種條件分支。這與 [[EV-TAIWAN-STRAIT-CRISIS]] 是同一個架構限制，不是本節點特有的。\n\n**最重要的反向力量不在本節點，而在下游 `ST-SPR-DEMAND`。** 供給錯配本身會觸發協調釋儲與需求破壞，那條路徑的時滯（2–12 個月）比主推力（0–6 個月）長，所以同一個結果節點在不同時間層可能方向相反。**只看立即層會系統性高估持續性。**\n\n**地緣風險溢價的半衰期通常很短。** 歷史上多數地緣事件的市場影響在數週到數月內消退，除非它實際改變了現金流。指向 CH-RISK-PREMIUM 那條邊應預期**幅度大但持續性差**，而圖沒有表達持續性的能力。\n\n**刻意不建巴拿馬運河的邊。** 2026-08 巴拿馬過閘標價創紀錄，但同時受聖嬰乾旱與改道需求影響，兩者無法從公開資料分離；且巴拿馬服務亞洲—美東航線，機制上不是荷姆茲的替代路徑。該候選在 2026-08-17 掃描紀錄中維持 R7 未解。\n\n**我刻意不寫任何機率。** 經濟因果圖沒有資格對地緣政治事件的發生機率或持續時間發言。"
+  },
+  {
+   "id": "EV-RU-UA-2022",
+   "label": "俄羅斯全面入侵烏克蘭",
+   "type": "event",
+   "domain": "戰爭",
+   "status": "已發生",
+   "date": "2022-02-24",
+   "aliases": [
+    "俄烏戰爭",
+    "烏俄戰爭",
+    "烏克蘭戰爭",
+    "俄羅斯入侵烏克蘭",
+    "russia ukraine war",
+    "ukraine invasion"
+   ],
+   "edges": [
+    {
+     "to": "ST-BLACKSEA",
+     "sign": 1,
+     "lag_months": [
+      0,
+      1
+     ],
+     "confidence": 0.95,
+     "mechanism": "黑海港口封鎖、航運保險費暴漲",
+     "evidence": "已實現 — 2022/2 敖德薩等港停擺",
+     "breaks_if": "黑海航道恢復通航且保險費正常化"
+    },
+    {
+     "to": "ST-SANCTIONS",
+     "sign": 1,
+     "lag_months": [
+      0,
+      2
+     ],
+     "confidence": 0.95,
+     "mechanism": "西方對俄金融、能源、技術制裁",
+     "evidence": "已實現 — 2022/2-6 多輪制裁",
+     "breaks_if": "制裁解除或普遍不執行"
+    },
+    {
+     "to": "ST-RU-GAS-CUT",
+     "sign": 1,
+     "lag_months": [
+      1,
+      6
+     ],
+     "confidence": 0.85,
+     "mechanism": "俄羅斯以減供作為反制槓桿",
+     "evidence": "已實現 — 2022 北溪流量降至零",
+     "breaks_if": "俄歐能源關係正常化"
+    },
+    {
+     "to": "ST-UA-FARMLAND",
+     "sign": 1,
+     "lag_months": [
+      1,
+      12
+     ],
+     "confidence": 0.9,
+     "mechanism": "耕地成戰場、勞動力徵召、機具與倉儲毀損",
+     "evidence": "已實現 — 2022 烏克蘭穀物產量大減",
+     "breaks_if": "戰事結束且農業重建完成"
+    },
+    {
+     "to": "CH-FISCAL",
+     "sign": 1,
+     "lag_months": [
+      1,
+      12
+     ],
+     "confidence": 0.85,
+     "mechanism": "國防預算上修與能源補貼同時擴張",
+     "evidence": "已實現 — 2022 起歐洲國防支出大幅上修",
+     "breaks_if": "財政緊縮壓過安全考量"
+    },
+    {
+     "to": "ST-INFO-WAR",
+     "sign": 1,
+     "lag_months": [
+      0,
+      3
+     ],
+     "confidence": 0.8,
+     "mechanism": "雙方資訊戰與平台演算法放大對立敘事",
+     "evidence": "有先例 — 2014 克里米亞",
+     "breaks_if": "衝突降溫且平台介入有效"
+    },
+    {
+     "to": "ST-RU-EXPORT-INFRA-DAMAGE",
+     "sign": 1,
+     "lag_months": [
+      24,
+      60
+     ],
+     "confidence": 0.75,
+     "mechanism": "長程打擊能力累積後，交戰方將對方能源出口與煉油設施列為目標。Novorossiysk 為俄羅斯最大黑海石油出口港，2025 年原油出口約 2.3 Mbd，其中 Sheskharis 終端約 830 kbd（占該港約 36%）；CPC 管線（設計運能約 1.4–1.7 Mbd）亦經此港區出海。單一港區集中度高，成規模打擊可抽走可定日期的一大塊出口量",
+     "evidence": "已實現",
+     "breaks_if": "停火，或防空使打擊無法奏效"
+    }
+   ],
+   "_counter": "戰爭本身不必然造成全球衝擊——關鍵在於交戰方在關鍵商品供應鏈上的份額。俄烏合計約佔全球小麥出口三成、俄羅斯佔歐洲天然氣進口約四成，這才是傳導的原因。同規模但非資源出口國的衝突，下游影響會小一個量級。"
+  },
+  {
+   "id": "EV-TAIWAN-STRAIT-CRISIS",
+   "label": "台海危機情境",
+   "type": "event",
+   "domain": "戰爭",
+   "status": "假設",
+   "aliases": [
+    "台海危機",
+    "台海衝突",
+    "taiwan strait"
+   ],
+   "edges": [
+    {
+     "to": "ST-TW-CONCENTRATION",
+     "sign": 1,
+     "lag_months": [
+      0,
+      1
+     ],
+     "confidence": 0.9,
+     "mechanism": "先進製程樞紐直接受影響",
+     "evidence": "理論推導 — 無先例可循",
+     "breaks_if": "衝突形式不影響產能"
+    },
+    {
+     "to": "CH-RISK-PREMIUM",
+     "sign": 1,
+     "lag_months": [
+      0,
+      3
+     ],
+     "confidence": 0.85,
+     "mechanism": "地緣風險急劇重評價",
+     "evidence": "有先例 — 但過往危機規模遠小",
+     "breaks_if": "市場已充分定價"
+    },
+    {
+     "to": "CH-SHIPPING-COST",
+     "sign": 1,
+     "lag_months": [
+      0,
+      3
+     ],
+     "confidence": 0.8,
+     "mechanism": "東亞航道保險與繞道",
+     "evidence": "有先例 — 紅海、黑海",
+     "breaks_if": "航道未受影響"
+    }
+   ],
+   "_counter": "**這個節點的所有下游估計都應該被視為粗糙。** 沒有可比的歷史先例——過往的台海緊張規模與現在的供應鏈集中度完全不同尺度。所有邊都標為「理論推導」或「有先例但規模不同」，信心上限因此壓在 0.50。\n\n**更根本的問題：這類事件的經濟後果高度取決於形式與持續時間**（封鎖／隔離／衝突、數週／數月／數年），而圖沒有能力表達這種條件分支。這是本 vault 圖譜架構的一個真實限制，不是這個節點特有的。\n\n我刻意不寫任何機率。**經濟因果圖沒有資格對地緣政治事件的發生機率發言。**"
+  },
+  {
+   "id": "EV-TARIFF-ESCALATION",
+   "label": "美中關稅升級",
+   "type": "event",
+   "domain": "政治",
+   "status": "進行中",
+   "date": "2018-07-06",
+   "aliases": [
+    "關稅升級",
+    "美中關稅",
+    "貿易戰",
+    "tariff",
+    "trade war"
+   ],
+   "edges": [
+    {
+     "to": "CH-TRADE-COST",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.9,
+     "mechanism": "關稅直接進入到岸成本",
+     "evidence": "已實現",
+     "breaks_if": "豁免或轉單吸收"
+    },
+    {
+     "to": "ST-SUPPLY-RELOCATE",
+     "sign": 1,
+     "lag_months": [
+      6,
+      36
+     ],
+     "confidence": 0.75,
+     "mechanism": "成本與政策風險驅動產能外移",
+     "evidence": "已實現 — 對美出口的來源國結構已明顯改變",
+     "breaks_if": "移轉成本高於關稅"
+    },
+    {
+     "to": "ST-CHINA-RETALIATE",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.7,
+     "mechanism": "對等反制與非關稅手段",
+     "evidence": "已實現",
+     "breaks_if": "談判達成緩和"
+    },
+    {
+     "to": "ST-CN-DEMAND-WEAK",
+     "sign": 1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.4,
+     "mechanism": "出口部門受壓抑",
+     "evidence": "理論推導 — 中國內需疲弱另有房地產等更大成因",
+     "breaks_if": "出口轉向第三市場補足"
+    },
+    {
+     "to": "S7-政策不確定性溢價",
+     "sign": 1,
+     "lag_months": [
+      0,
+      3
+     ],
+     "confidence": 0.65,
+     "mechanism": "Caldara et al.（Fed IFDP 1256, 2019）的 TPU 指數由關稅相關的報紙報導與法說會逐字稿建構，量測期涵蓋 2017 至 2018 的關稅升級。關稅升級與 TPU 上升是同一組文本事件，不是推論",
+     "evidence": "已實現",
+     "breaks_if": "關稅措施推出時政策不確定性指數不上升"
+    }
+   ],
+   "_counter": "**關稅的最終負擔由誰承擔，實證上長期有爭議。** 早期研究多半發現主要由進口國的進口商與消費者承擔，但後續也有匯率與供應商讓價部分吸收的證據。這張圖把 `CH-TRADE-COST → OUT-US-CPI` 的信心設在 0.50，反映的正是這個爭議，不是我的猶豫。\n\n另一個常被忽略的事實：**轉單不等於脫鉤**。對美出口來源從中國轉向第三國，但那些國家對中國中間財的依賴反而上升。所以 `ST-SUPPLY-RELOCATE` 抑制風險的效果被高估的可能性很大。"
+  },
+  {
+   "id": "OUT-CAPITAL-EFFICIENCY",
+   "label": "資本使用效率",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "資本效率",
+    "投資效率"
+   ],
+   "edges": [],
+   "_counter": "這是本子圖裡最長時滯、最難觀察的結果節點。**它的重要性與它的可測量性成反比。**"
+  },
+  {
+   "id": "OUT-COPPER",
+   "label": "銅價",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "銅",
+    "copper"
+   ],
+   "edges": [],
+   "_counter": "AI 相關的銅需求增量相對全球銅市規模仍然不大，**很可能被中國房地產、傳統電氣化等更大的力量淹沒**。這條邊的信心設在 0.55–0.60 已經偏高。"
+  },
+  {
+   "id": "OUT-CORP-MARGINS",
+   "label": "企業毛利率",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "毛利率",
+    "企業獲利"
+   ],
+   "edges": [],
+   "_counter": "多股力量同時作用且方向相反：電力成本↑、勞動成本↓、生產力↑、競爭把節省讓渡給客戶。**淨效果很可能接近零，而圖的 max 規則會讓最強的單一力量主導，可能高估淨效果。**"
+  },
+  {
+   "id": "OUT-DC-REIT",
+   "label": "資料中心與基礎建設資產",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "資料中心 reit",
+    "idc"
+   ],
+   "edges": [],
+   "_counter": "長約鎖定的租金在需求高峰時是保護，在供給過剩時是限制。**資料中心的供給反應速度比多數人以為的快。**"
+  },
+  {
+   "id": "OUT-DEFENSE-STOCKS",
+   "label": "國防類股",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "國防股",
+    "軍工股"
+   ],
+   "edges": [],
+   "_counter": "國防預算上修到實際訂單、再到營收認列，時滯可達 3–5 年。股價的反應遠快於基本面，因此包含大量預期成分，也因此容易過度。"
+  },
+  {
+   "id": "OUT-ECB-RATE",
+   "label": "ECB 政策利率",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "ecb",
+    "歐洲央行",
+    "政策利率"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EU-GDP",
+     "sign": -1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.7,
+     "mechanism": "利率上升抑制投資與耐久財消費",
+     "evidence": "已實現",
+     "breaks_if": "傳導受阻"
+    },
+    {
+     "to": "OUT-EUR-USD",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.45,
+     "mechanism": "利差收斂支撐歐元",
+     "evidence": "有先例 — 但 2022 年被避險需求蓋過",
+     "breaks_if": "美元避險需求主導"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "OUT-ELEC-PRICE",
+   "label": "電價",
+   "type": "outcome",
+   "domain": "能源",
+   "status": "可觀察",
+   "aliases": [
+    "電價",
+    "電力價格"
+   ],
+   "edges": [
+    {
+     "to": "OUT-CORP-MARGINS",
+     "sign": -1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.4,
+     "mechanism": "成本上升",
+     "evidence": "理論推導",
+     "breaks_if": "佔比太小"
+    }
+   ],
+   "_counter": "電價的地區差異極大，全國平均幾乎沒有意義。**這張圖用單一節點代表電價是重大簡化。**"
+  },
+  {
+   "id": "OUT-EM-FOOD-STRESS",
+   "label": "新興市場糧食壓力與社會動盪",
+   "type": "outcome",
+   "domain": "政治",
+   "status": "可觀察",
+   "aliases": [
+    "糧食危機",
+    "新興市場糧食"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EM-INSTABILITY",
+     "sign": 1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.55,
+     "mechanism": "糧價與燃料價格是歷史上動盪的可靠前導",
+     "evidence": "有先例 — 2008、2011",
+     "breaks_if": "補貼與援助到位"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "OUT-EM-INSTABILITY",
+   "label": "新興市場政治不穩",
+   "type": "outcome",
+   "domain": "政治",
+   "status": "可觀察",
+   "aliases": [
+    "新興市場動盪"
+   ],
+   "edges": [],
+   "_counter": "糧價只是眾多觸發因素之一，且需要既有的政治脆弱性才會轉化為動盪。單靠糧價預測政變的命中率很低。"
+  },
+  {
+   "id": "OUT-ENERGY-STOCKS",
+   "label": "能源類股",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "能源股"
+   ],
+   "edges": [],
+   "_counter": ""
+  },
+  {
+   "id": "OUT-EQUITY-CONCENTRATION",
+   "label": "股市集中度",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "市場集中度",
+    "股市集中"
+   ],
+   "edges": [],
+   "_counter": "集中度本身不是好壞，但它改變風險結構：分散化的效果下降，單一供應鏈事件的系統性影響上升。**這與沙盤 [[S9-市場二階量改變]] 講的方向相反**——S9 預期離散度上升、相關性下降。"
+  },
+  {
+   "id": "OUT-EQUITY-VOL",
+   "label": "股市波動",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [],
+   "edges": [],
+   "_counter": "**波動是雙向的，但圖只能表達單向。** 本節點被推升代表「波動變大」，而波動變大對不同資產、不同持有期的含意完全不同。**它不是一個有好壞方向的結果節點。**\n\n**VIX 與實現波動不是同一個東西。** 前者是選擇權市場對未來 30 天的定價，後者是已發生的事實。指向本節點的邊若引用的是實現波動的研究（例如 BBD 的公司層級波動），用 VIX 計分會有口徑落差。"
+  },
+  {
+   "id": "OUT-EU-CPI",
+   "label": "歐元區通膨",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "歐元區通膨",
+    "hicp"
+   ],
+   "edges": [
+    {
+     "to": "OUT-ECB-RATE",
+     "sign": 1,
+     "lag_months": [
+      3,
+      12
+     ],
+     "confidence": 0.85,
+     "mechanism": "通膨目標制下央行必須反應",
+     "evidence": "已實現 — ECB 2022/7 起連續升息",
+     "breaks_if": "央行判定為暫時性而不反應"
+    }
+   ],
+   "_counter": "把 2022 年的通膨全部歸因於戰爭是錯的。疫情期間的財政貨幣刺激、供應鏈瓶頸、需求結構轉移都在戰前就已推升物價。**戰爭是加速器，不是唯一原因——這張圖無法做因果歸因，只能標示路徑存在。**"
+  },
+  {
+   "id": "OUT-EU-GAS-PRICE",
+   "label": "歐洲天然氣價格 (TTF)",
+   "type": "outcome",
+   "domain": "能源",
+   "status": "可觀察",
+   "aliases": [
+    "天然氣",
+    "ttf",
+    "歐洲天然氣"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EU-CPI",
+     "sign": 1,
+     "lag_months": [
+      1,
+      9
+     ],
+     "confidence": 0.8,
+     "mechanism": "能源直接進入 CPI 並透過電價二次傳導",
+     "evidence": "已實現",
+     "breaks_if": "價格管制"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "OUT-EU-GDP",
+   "label": "歐元區經濟成長",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "歐洲成長",
+    "歐元區gdp"
+   ],
+   "edges": [],
+   "_counter": "歐洲在 2022 年被廣泛預期會陷入嚴重衰退，實際上並沒有。暖冬、LNG 替代、財政補貼、超額儲蓄四股力量同時作用。**這是本圖最重要的教訓：多條反向邊疊加起來，可以完全抵消一條看似壓倒性的主邊。**"
+  },
+  {
+   "id": "OUT-EU-RENEW-CAPEX",
+   "label": "歐洲能源基礎建設投資",
+   "type": "outcome",
+   "domain": "能源",
+   "status": "可觀察",
+   "aliases": [
+    "再生能源投資",
+    "repowereu"
+   ],
+   "edges": [],
+   "_counter": ""
+  },
+  {
+   "id": "OUT-EUR-USD",
+   "label": "歐元兌美元",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "歐元",
+    "eurusd"
+   ],
+   "edges": [],
+   "_counter": "匯率是整張圖裡最不可預測的結果節點。它同時受利差、避險流、貿易條件、能源進口帳單影響，各力量方向不一。**任何指向匯率的路徑，信心都應該打對折。**"
+  },
+  {
+   "id": "OUT-GDP-CAPEX",
+   "label": "固定投資對 GDP 的貢獻",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "固定投資",
+    "gdp 資本支出"
+   ],
+   "edges": [],
+   "_counter": "**水準 vs 成長的混淆在這裡最危險。** 資本支出停在高原期時，對 GDP 成長的貢獻歸零，即使金額仍高。「AI 撐住經濟」的說法通常沒有區分這兩件事。"
+  },
+  {
+   "id": "OUT-GLOBAL-TRADE",
+   "label": "全球貿易量佔 GDP",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "全球貿易",
+    "貿易佔gdp"
+   ],
+   "edges": [],
+   "_counter": "**這個指標的變化極為緩慢，而且遠不如敘事上劇烈。** 用它來驗證「脫鉤」通常會發現：資料上沒發生什麼事。"
+  },
+  {
+   "id": "OUT-GOLD",
+   "label": "黃金",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "黃金",
+    "gold"
+   ],
+   "edges": [],
+   "_counter": "黃金同時受實質利率、美元、央行需求、避險情緒驅動。2022 年實質利率大幅上升，理論上對黃金極為不利，但金價僅小幅下跌——央行需求可能是差額的解釋，但無法證實。"
+  },
+  {
+   "id": "OUT-OIL-PRICE",
+   "label": "原油價格",
+   "type": "outcome",
+   "domain": "能源",
+   "status": "可觀察",
+   "aliases": [
+    "油價",
+    "原油",
+    "brent"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EU-CPI",
+     "sign": 1,
+     "lag_months": [
+      1,
+      9
+     ],
+     "confidence": 0.7,
+     "mechanism": "運輸與化工成本傳導",
+     "evidence": "已實現",
+     "breaks_if": "稅制吸收"
+    },
+    {
+     "to": "OUT-ENERGY-STOCKS",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.8,
+     "mechanism": "上游獲利直接連動油價",
+     "evidence": "已實現 — 2022 能源類股表現最強",
+     "breaks_if": "稅制或政治干預壓縮獲利"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "OUT-POWER-UTIL",
+   "label": "電力與公用事業類股",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "電力股",
+    "公用事業"
+   ],
+   "edges": [],
+   "_counter": "電力商的獲利受監管費率決定，資產基礎擴張不必然等於獲利成長。**這條邊的實現高度依賴監管態度，而監管是政治的。**"
+  },
+  {
+   "id": "OUT-PRODUCTIVITY-STAT",
+   "label": "官方生產力統計",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "生產力",
+    "tfp"
+   ],
+   "edges": [],
+   "_counter": "**這是判定 AI 總體意義的最終指標，也是最遲鈍的指標。** 電腦時代花了約二十年才出現在這裡。任何三年內的生產力數字都不足以證實或證偽 AI 的效果。"
+  },
+  {
+   "id": "OUT-RARE-EARTH",
+   "label": "稀土與關鍵礦物價格",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "稀土",
+    "關鍵礦物"
+   ],
+   "edges": [],
+   "_counter": "**價格衝擊劇烈但短暫。** 過往每次管制都催生境外精煉產能，時滯約 2–5 年。這是典型的適應性反向力量，但本圖尚未把那條反向邊建出來——**已知缺口。**"
+  },
+  {
+   "id": "OUT-REAL-RATES",
+   "label": "實質利率",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "實質利率",
+    "real rates"
+   ],
+   "edges": [],
+   "_counter": "實質利率受人口、儲蓄、財政、生產力等多重長期力量決定，**AI 資本支出的影響很可能小到無法從中分離**。這個節點放進圖裡的信心刻意設得很低（0.25–0.40）。"
+  },
+  {
+   "id": "OUT-SEMI-STOCKS",
+   "label": "半導體類股",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "半導體",
+    "晶片股",
+    "semis"
+   ],
+   "edges": [
+    {
+     "to": "CH-INDEX-CONCENTRATION",
+     "sign": 1,
+     "lag_months": [
+      0,
+      18
+     ],
+     "confidence": 0.75,
+     "mechanism": "權值上升推高指數集中度",
+     "evidence": "已實現",
+     "breaks_if": "漲幅落後"
+    }
+   ],
+   "_counter": "這是全圖信心最高的一組邊（多為已實現），但也是**最可能已被定價**的一組。圖能告訴你路徑存在，不能告訴你市場是否已經反映。**這張圖沒有任何估值或預期的概念。**"
+  },
+  {
+   "id": "OUT-TRADING-VOLUME",
+   "label": "股市成交量",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [],
+   "edges": [],
+   "_counter": "**成交量有非常強的長期趨勢與結構性斷點**（電子化、零手續費、當沖比重、被動化、股票分割）。**任何跨十年的比較都不可靠。**計分時應與同期基準比較，不可用絕對水準。\n\n**成交量也會被與信念離散度無關的因素推動**（指數再平衡、期權到期、被動資金流）。本節點的入邊只有一條，但真實世界的驅動因子遠多於此。"
+  },
+  {
+   "id": "OUT-TW-EQUITY",
+   "label": "台股",
+   "type": "outcome",
+   "domain": "市場",
+   "status": "可觀察",
+   "aliases": [
+    "台股",
+    "台灣股市",
+    "taiex"
+   ],
+   "edges": [],
+   "_counter": "台股同時受兩股方向相反的力量：**樞紐地位支撐獲利**（↑）、**地緣風險壓縮估值**（↓）。淨效果取決於哪一股當下主導，而圖只能告訴你兩條路徑都存在。"
+  },
+  {
+   "id": "OUT-US-CPI",
+   "label": "美國通膨",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "美國通膨",
+    "us cpi"
+   ],
+   "edges": [],
+   "_counter": "**這個節點同時被兩股方向相反的力量指向**：貿易成本↑（關稅、重組）與產能外溢↓（低價進口）。主流敘事幾乎只講前者。**淨效果是實證問題——而圖的 max 規則會讓較強的單一力量主導，可能高估淨效果。**"
+  },
+  {
+   "id": "OUT-US-LNG-EXPORT",
+   "label": "美國 LNG 出口",
+   "type": "outcome",
+   "domain": "能源",
+   "status": "可觀察",
+   "aliases": [
+    "美國lng",
+    "lng出口"
+   ],
+   "edges": [],
+   "_counter": ""
+  },
+  {
+   "id": "OUT-WHEAT-PRICE",
+   "label": "小麥價格",
+   "type": "outcome",
+   "domain": "糧食",
+   "status": "可觀察",
+   "aliases": [
+    "小麥",
+    "小麥價格",
+    "wheat"
+   ],
+   "edges": [],
+   "_counter": ""
+  },
+  {
+   "id": "OUT-WHITE-COLLAR-JOBS",
+   "label": "白領入門職缺",
+   "type": "outcome",
+   "domain": "經濟",
+   "status": "可觀察",
+   "aliases": [
+    "白領就業",
+    "入門職缺"
+   ],
+   "edges": [],
+   "_counter": "**歸因不可能。** 入門職缺變化同時受升息、後疫情正常化、產業週期影響，這些在時間上與 AI 導入高度重疊。目前沒有任何研究能乾淨地分離出 AI 的貢獻。"
+  },
+  {
+   "id": "S0-分發權解體",
+   "label": "分發權解體",
+   "type": "state",
+   "domain": "媒體",
+   "status": "事實",
+   "aliases": [
+    "分發權解體",
+    "守門人消失",
+    "平台分發",
+    "distribution collapse"
+   ],
+   "edges": [
+    {
+     "to": "S2-信任崩落",
+     "sign": 1,
+     "lag_months": [
+      0,
+      36
+     ],
+     "confidence": 0.7,
+     "mechanism": "Reuters Institute Digital News Report 2026：社群與影音網路平均而言已比電視與新聞網站更常被當成新聞來源，48 個市場中有 30 個出現此轉變；同一份調查中，回答經常信任新聞的比例顯著下降 3 個百分點至 37%，是 2015 年開始量測以來最低，48 個市場中有 29 個出現顯著下降、其中 19 個下降 5 個百分點以上。機制是守門功能消失後，受眾接觸到的內容不再經過同一套查核程序",
+     "evidence": "有先例",
+     "breaks_if": "分發管道持續移轉但新聞信任止跌或回升"
+    },
+    {
+     "to": "S3-信念離散度上升",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.5,
+     "mechanism": "守門功能消失後，不同受眾接觸到的事實集合本身就不同。DNR 量測的是接觸管道的結構轉變，由此推導到信念分布變寬",
+     "evidence": "理論推導",
+     "breaks_if": "分發碎片化但各群體的事實集合仍高度重疊"
+    }
+   ],
+   "_counter": "**⚠️ 指向 S2 的那條邊是同一份調查裡的兩個同向趨勢，不是因果識別。** Reuters DNR 同時量到「分發移轉到平台」與「信任降到量測以來最低」，但**該報告沒有做任何因果推論**。反向因果（先不信任、才離開電視）與共同原因（政治極化）都無法排除。\n證據等級原本擬標 `已實現`，**2026-09-03 Wendy 裁定降為 `有先例`**——理由是證據等級不應該只反映「兩端狀態都被觀察到」，還要反映因果識別的強度。**這個裁定同時確立了一條通則，不只適用於本條邊。**\n\n**[待驗證] 分發結構轉變的下游效果可能已經在反轉。** 沙盤層列的分岔 C（AI 介面吸收分發）機率約 30%，而它是**唯一會讓下游反轉**的路徑——因為它重建了守門人。DNR 2026 量到每週用 AI 聊天機器人取得新聞的比例由 7% 升至 10%、35 歲以下為 16%。**若該比例持續上升，本節點指向 S3 的 sign 可能需要翻轉。**\n何時複查：下次觸碰本節點時，或 DNR 年度報告（每年 6 月）顯示 AI 介面使用率跨過 20%。\n\n**本節點沒有上游，所以它在傳導中永遠是滿的。** 這是刻意的（它是驅動源），但也意味著**圖無法表達「分發權解體的程度在變化」**——只能表達它存在或不存在。"
+  },
+  {
+   "id": "S2-信任崩落",
+   "label": "信任崩落",
+   "type": "state",
+   "domain": "媒體",
+   "status": "事實",
+   "aliases": [
+    "信任崩落",
+    "新聞信任",
+    "media trust",
+    "trust collapse"
+   ],
+   "edges": [
+    {
+     "to": "S3-信念離散度上升",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.5,
+     "mechanism": "Christelis 等人以 2015 年荷蘭 CentERpanel 微觀資料發現：對央行的信任愈高，對未來通膨的不確定性顯著愈低。把資訊環境的信任下降類比到信念分布變寬",
+     "evidence": "理論推導",
+     "breaks_if": "信任下降但各群體對同一事實的判讀仍收斂"
+    },
+    {
+     "to": "S6-央行溝通失效",
+     "sign": 1,
+     "lag_months": [
+      0,
+      36
+     ],
+     "confidence": 0.55,
+     "mechanism": "Coibion, Gorodnichenko & Weber 對近 20,000 名美國個人的隨機控制試驗：閱讀 FOMC 聲明原文對通膨預期的平均效果，與單純被告知聯準會的通膨目標差不多；而閱讀關於同一次會議的新聞報導，預期修正幅度只有一半。這直接量測了政策訊息經過媒體通道後的衰減",
+     "evidence": "有先例",
+     "breaks_if": "政策訊息經媒體通道傳遞的衰減幅度不隨信任下降而擴大"
+    }
+   ],
+   "_counter": "**⚠️ 來源錯配，這是本節點最大的推論跳躍。** 指向 S3 那條邊引用的 Christelis 等人量的是**對央行的信任**，而本節點講的是**對新聞的信任**。**兩者可能相關但不是同一個構念**，我沒有找到直接把新聞信任接到通膨預期離散度的研究。已因此標 `理論推導` 而非 `有先例`。\n\n**[待驗證] 把 2019 年前後的實驗外推到 2026 年的 AI 摘要環境，是推廣不是證據。** Coibion 等人的實驗做在 AI 摘要成為新聞介面之前。DNR 2026 量到 AI 聊天機器人新聞使用率 7% 升至 10%（35 歲以下 16%），**而 AI 摘要的失真結構與人類寫的新聞報導不必然相同**——可能更小（摘要更貼近原文）也可能更大（幻覺與壓縮）。\n何時複查：下次觸碰本節點時，或出現任何針對「AI 摘要 vs 原文」對預期影響的實驗研究。\n\n**信任下降不必然等於行為改變。** 沙盤層自己就指出使用率仍在漲。本節點的兩條出邊都假設信任水準會影響訊息的採納，但**人們可能繼續按照他們不信任的訊息行動**。這條假設沒有被檢驗。\n\n**分岔 C（崩潰式失信）的二階效果與主線相反。** 沙盤層寫得很清楚：一次夠大的 AI 造假災難可能反而加速監管介入，把長期推向再集中化。**短期最壞的分岔不一定等於長期最壞的結果**，而圖只有一條線、一個 sign，表達不了這個非線性。"
+  },
+  {
+   "id": "S3-信念離散度上升",
+   "label": "信念離散度上升",
+   "type": "state",
+   "domain": "媒體",
+   "status": "證據混雜",
+   "aliases": [
+    "信念離散度",
+    "意見分歧",
+    "belief dispersion",
+    "disagreement",
+    "分析師預測離散度"
+   ],
+   "edges": [
+    {
+     "to": "OUT-TRADING-VOLUME",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.55,
+     "mechanism": "同一份資訊被不同參與者讀出不相容的結論時才會出現交易對手。Carlin, Longstaff & Matoba （JFE 2014）在 MBS 市場直接陳述：分歧上升伴隨成交量放大，且明說是分歧而非不確定性本身在驅動交易——只有當市場出現分歧時，較高的不確定性才伴隨較多交易",
+     "evidence": "有先例",
+     "breaks_if": "分歧上升時成交量不變或萎縮，或該關係只存在於單一資產類別"
+    },
+    {
+     "to": "OUT-EQUITY-VOL",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.5,
+     "mechanism": "同一來源（Carlin, Longstaff & Matoba, JFE 2014）陳述分歧上升伴隨報酬波動上升。機制是價格在不相容的信念之間反覆重定價",
+     "evidence": "有先例",
+     "breaks_if": "控制成交量後波動與分歧的關係消失"
+    }
+   ],
+   "_counter": "**這個節點刻意沒有指向任何報酬類結果，那不是遺漏，是查完文獻之後的決定。**\n2026-09-03 盤點「意見分歧 → 股票報酬」的文獻，結果是**符號沒有共識**，而且分歧的位置不在效果大小、在符號本身與這個效果是否真的存在：\n  ・主張負向：Diether-Malloy-Scherbina（JF 2002）及其後續\n  ・主張正向：Carlin-Longstaff-Matoba（JFE 2014，MBS 市場）；Kim & Na（JEmpFin 2016）在**同一個資料集**上換一個離散度定義就翻號（橫斷面為負、時序平均為正）\n  ・主張符號取決於狀態：Atmaz & Basak（JF 2018）——樂觀時負、悲觀時正\n  ・主張是別的東西在驅動：Johnson（JF 2004，槓桿與特質風險）、Avramov et al.（JFE 2009，信用評等）、Min-Qiu-Roh（JBF 2022，未來獲利能力）、Hwang-Wong-Yi（PBFJ 2022，分析師自我審查）——**這四個替代解釋彼此互斥，但共同顯示離散度係數對控制變數極不穩健**\n  ・複製稽核：Hou-Xue-Zhang（RFS 2020）在 NYSE 分界＋市值加權下，該異象的十分位多空報酬全部落在零的一個標準誤之內。**這個效果活在等權與微型股設定裡。**\n  ・國際：Leippold & Lohre（JEmpFin 2014）發現歐洲的效果集中在科技泡沫前後的窄時窗。\n**引擎的 sign 只能是 +1 或 −1。在文獻沒有共識時畫任何一個方向，都是在假裝有共識。**\n\n**不畫報酬邊不會影響任何其他節點的參數。** 少一條邊只是少一條路徑；認識論上限是逐邊計算的，其他邊的信心與時滯完全不受影響。唯一的後果是：**媒體層目前只能到達波動與成交量，到不了報酬。** 那是誠實的空白。\n若日後要接報酬，可信度較高的路線是**經由波動與成交量再進風險溢價**，而不是從本節點直接畫一條報酬邊。\n\n**本節點的兩條出邊都引用同一篇論文（Carlin, Longstaff & Matoba 2014），而且那是 MBS 市場、不是股票市場。** 引擎對同一結果的多條同向路徑取 max 不取 sum，但讀的人很容易把兩條邊當成兩份獨立證據——**它們不是**。把它們外推到股票市場是我做的推廣，不是原文的主張。\n\n**上游只有一條入邊（ST-INFO-WAR，信心 0.25、理論推導）。** 也就是說本節點在實際傳導中很容易被上游稀釋到門檻以下。這反映的是真實狀況：圖目前幾乎沒有能推升信念離散度的入口。"
+  },
+  {
+   "id": "S6-央行溝通失效",
+   "label": "央行溝通失效",
+   "type": "state",
+   "domain": "媒體",
+   "status": "未檢驗",
+   "aliases": [
+    "央行溝通失效",
+    "前瞻指引失效",
+    "central bank communication",
+    "政策傳導鈍化"
+   ],
+   "edges": [
+    {
+     "to": "S7-政策不確定性溢價",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.5,
+     "mechanism": "若政策訊號在實體經濟通道衰減，同一次政策決定所隱含的結果分布變寬。衰減本身已被 Coibion 等人的實驗量測（新聞報導的預期修正幅度只有原文的一半）",
+     "evidence": "理論推導",
+     "breaks_if": "溝通有效性下降但政策結果的隱含分布不變寬"
+    },
+    {
+     "to": "OUT-EQUITY-VOL",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.45,
+     "mechanism": "溝通有效性下降時，政策決定在市場眼中的意外成分變大。沙盤層對本節點主線分岔的描述即為事件日波動上升",
+     "evidence": "理論推導",
+     "breaks_if": "政策日的已實現波動與溝通有效性的代理指標無關"
+    }
+   ],
+   "_counter": "**⚠️ 本節點最重要的洞見，圖表達不出來。** 沙盤層說 S6 的真相是**分裂的**——金融通道暢通、實體通道變鈍。**圖只有一個節點、一個 sign，會讓讀者以為是全面失效。**\n2026-09-03 Wendy 裁定**本批先不拆成兩個節點，有嚴重影響時再評估**。\n何時重評：若出現「金融市場反應正常但實體傳導明顯變慢」的可量測案例，或本節點的下游判斷被實際計分且錯得離譜。\n\n**[待驗證] 本節點的兩條出邊都沒有直接來源。** S7 與 OUT-EQUITY-VOL 那兩條只有沙盤層自己的推理，我沒有找到任何直接檢驗「溝通有效性 → 政策不確定性溢價」或「溝通有效性 → 事件日波動」的研究。**它們的存在意義是把鏈條接起來，不是宣稱已知。**0.45 的上限正好反映這件事。\n何時複查：下次觸碰本節點時；或找到任何以央行溝通有效性為自變數的實證研究。\n\n**這個節點可能會反轉。** 沙盤層指出：若長期走向 AI 再集中化，「說服全社會」會變成「確保 2 至 3 個主流模型正確摘要我的聲明」——那是技術問題，比說服一億個分裂的社群使用者容易得多。**觀察訊號很具體：若哪一天某國央行公開討論如何確保 AI 系統正確呈現其政策立場，那就是反轉的強烈訊號。**\n\n**不畫指向通膨的邊是刻意的。** 預期脫錨的方向是雙向的（可能上偏也可能下偏），而引擎的 sign 只能是 +1 或 −1。與 S3 不畫報酬邊同一個理由。"
+  },
+  {
+   "id": "S7-政策不確定性溢價",
+   "label": "政策不確定性溢價",
+   "type": "state",
+   "domain": "媒體",
+   "status": "未檢驗",
+   "aliases": [
+    "政策不確定性",
+    "EPU",
+    "economic policy uncertainty",
+    "貿易政策不確定性",
+    "TPU"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EQUITY-VOL",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.6,
+     "mechanism": "Baker, Bloom & Davis（QJE 2016）：政策不確定性與較高的股價波動相關；公司層級上 EPU 上升 1% 對應約 0.43% 的波動上升，控制 VIX 後仍穩健。機制是政府採購與法規暴露度高的公司，其現金流分布隨政策文本擴散而變寬",
+     "evidence": "有先例",
+     "breaks_if": "控制 VIX 或總體波動後關係消失"
+    },
+    {
+     "to": "OUT-GDP-CAPEX",
+     "sign": -1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.6,
+     "mechanism": "兩個獨立來源同方向。Baker, Bloom & Davis（QJE 2016）的總體 VAR：一個 90 點的 EPU 衝擊預示總投資下降約 6%。Caldara et al.（Fed IFDP 1256, 2019）以七份報紙與約 16 萬份法說會逐字稿建構的 TPU：相當於 2017 至 2018 那次上升的衝擊，預示總投資下降 1 至 2%。機制是不可逆投資在期權價值上升時遞延。⚠️ 兩者的衝擊大小定義不同，故只採方向、不採量級。⚠️ 兩者皆為美國口徑",
+     "evidence": "有先例",
+     "breaks_if": "控制利率與需求預期後投資對政策不確定性無反應"
+    }
+   ],
+   "_counter": "**⚠️ OUT-GDP-CAPEX 那條邊的時滯 [3, 18] 是推導數值，不是任何來源給的。**\nWendy 2026-09-03 核可時明確指示：**備註為推導數值，不做實質採用。**\n兩篇來源都只給了投資下降的**量級**，都沒有給反應的**時間結構**。下界 3、上界 18 是依「資本支出決策有審批與施工週期」推的。\n**操作上的意思**：本條邊產生的任何 OUT-GDP-CAPEX 判斷，在登記與計分時必須註明其時窗歸屬缺乏來源支持，**不得單獨作為實質依據**。若日後找到有時間結構的來源，這個區間應該被取代——那時要走第 8 節的調參流程。\n\n**⚠️ 國別口徑不一致，這是既有的鬆散，本批沒有修好它。**\nEPU 與 TPU 都是**美國**指數，而 OUT-GDP-CAPEX（固定投資對 GDP 的貢獻）在圖上**沒有指定國別**。計分時應以**美國固定投資**（BEA／FRED）為觀察對象。\n**根本的修法有三種**，都超出本批已凍結的提案範圍，需要各自的提案：\n  (a) 只在節點說明與 watch 指標裡寫死口徑——最小改動，但口徑仍散在文字裡；\n  (b) 把國別混在一起的 outcome 節點拆開（OUT-GDP-CAPEX → 美國／歐元區兩個）——會動到既有節點與既有的邊；\n  (c) 在 graphlib 的節點格式加一個 scope 欄位，讓所有 outcome 都必須標地理口徑——最徹底，但要改引擎與全部四支既有 seed。\n**本批採 (a) 的最小版本，並把 (b)(c) 留為待決。**本批新建的兩個 outcome 節點已在建立時就寫死美國口徑，算是為 (c) 立了先例。\n\n**兩條出邊都是美國研究，外推到全球是我做的推廣。** BBD 有 12 國的 panel VAR，但我只回查了美國部分的敘述。\n\n**入邊只有兩條（關稅升級、晶片管制收緊），都是美中子圖的事件。** 真正該推升政策不確定性的來源遠不只這兩個（選舉、財政懸崖、央行溝通、監管介入）。**本節點目前的入口覆蓋很窄**，這是已知的缺口，不是完整的模型。"
+  },
+  {
+   "id": "ST-BLACKSEA",
+   "label": "黑海航運與港口封鎖",
+   "type": "state",
+   "domain": "戰爭",
+   "status": "已緩解",
+   "aliases": [
+    "黑海封鎖",
+    "敖德薩",
+    "黑海航運"
+   ],
+   "edges": [
+    {
+     "to": "CH-GRAIN-SUPPLY",
+     "sign": 1,
+     "lag_months": [
+      0,
+      2
+     ],
+     "confidence": 0.9,
+     "mechanism": "烏克蘭穀物無法出海，實質供給退出市場",
+     "evidence": "已實現",
+     "breaks_if": "替代路線運能補足"
+    },
+    {
+     "to": "CH-SHIPPING-COST",
+     "sign": 1,
+     "lag_months": [
+      0,
+      1
+     ],
+     "confidence": 0.85,
+     "mechanism": "戰爭風險保險費與繞道成本",
+     "evidence": "已實現",
+     "breaks_if": "風險溢價回落"
+    }
+   ],
+   "_counter": "黑海穀物協議（2022-07）與多瑙河／陸路替代路線大幅削弱了這條邊的長期強度。這是一個典型例子：第一時間看起來是永久性衝擊的東西，往往在數月內被替代路徑部分抵消。"
+  },
+  {
+   "id": "ST-CHINA-RETALIATE",
+   "label": "中國反制措施",
+   "type": "state",
+   "domain": "政治",
+   "status": "進行中",
+   "aliases": [
+    "中國反制",
+    "稀土管制",
+    "關鍵礦物"
+   ],
+   "edges": [
+    {
+     "to": "OUT-RARE-EARTH",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.7,
+     "mechanism": "供給集中度極高，管制立即反映在價格",
+     "evidence": "已實現 — 多次公告後價格跳升",
+     "breaks_if": "替代來源或庫存充足"
+    },
+    {
+     "to": "CH-INPUT-PRICE",
+     "sign": 1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.5,
+     "mechanism": "關鍵礦物進入電動車、風電、國防供應鏈",
+     "evidence": "理論推導 — 佔終端成本比重通常不高",
+     "breaks_if": "佔比太小或可替代"
+    },
+    {
+     "to": "ST-DUAL-SYSTEM",
+     "sign": 1,
+     "lag_months": [
+      12,
+      48
+     ],
+     "confidence": 0.5,
+     "mechanism": "反制強化雙軌化動能",
+     "evidence": "理論推導",
+     "breaks_if": "談判緩和"
+    }
+   ],
+   "_counter": "**稀土的故事經常被誇大。** 中國在**精煉**環節份額極高，但礦源分布其實較分散，而且過往每次管制都催生了境外精煉產能。價格衝擊通常劇烈但短暫——**這是典型的適應性反向力量案例，時滯約 2–5 年。**"
+  },
+  {
+   "id": "ST-CHIP-CONCENTRATION",
+   "label": "先進製程與加速器供給集中",
+   "type": "state",
+   "domain": "AI",
+   "status": "已發生",
+   "aliases": [
+    "晶片集中",
+    "先進製程",
+    "加速器供給"
+   ],
+   "edges": [
+    {
+     "to": "OUT-SEMI-STOCKS",
+     "sign": 1,
+     "lag_months": [
+      0,
+      18
+     ],
+     "confidence": 0.8,
+     "mechanism": "議價能力與毛利率提升",
+     "evidence": "已實現",
+     "breaks_if": "產能大幅擴張稀釋議價力"
+    },
+    {
+     "to": "CH-INDEX-CONCENTRATION",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.7,
+     "mechanism": "少數公司市值佔比上升",
+     "evidence": "已實現 — 指數集中度創數十年新高",
+     "breaks_if": "漲勢擴散至其他類股"
+    },
+    {
+     "to": "ST-EXPORT-CONTROL",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.6,
+     "mechanism": "戰略物資屬性引發管制",
+     "evidence": "已實現",
+     "breaks_if": "地緣政治緩和"
+    }
+   ],
+   "_counter": "**集中度上升同時是報酬來源與風險來源。** 同一個事實既支撐半導體類股的重評價，也讓整個市場對單一供應鏈事件的脆弱度上升。這兩條邊方向相反卻同源——**任何只講其中一邊的分析都是不完整的。**"
+  },
+  {
+   "id": "ST-CN-DEMAND-WEAK",
+   "label": "中國內需疲弱",
+   "type": "state",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "中國內需",
+    "中國經濟放緩"
+   ],
+   "edges": [
+    {
+     "to": "ST-EXCESS-CAPACITY",
+     "sign": 1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.75,
+     "mechanism": "內需吸收不了的產能轉向出口",
+     "evidence": "已實現 — 多個產業出口量價背離",
+     "breaks_if": "產能出清"
+    }
+   ],
+   "_counter": "**這個節點的主因不是美中競爭，是房地產。** 我把它放進美中子圖是因為關稅是它的一個次要成因，但如果讀圖的人因此以為「美中對抗導致中國內需疲弱」，那就是嚴重的因果誤讀。上游那條邊的信心只給 0.40，就是為了標示這一點。"
+  },
+  {
+   "id": "ST-COMPUTE-DEMAND",
+   "label": "算力需求擴張",
+   "type": "state",
+   "domain": "AI",
+   "status": "進行中",
+   "aliases": [
+    "算力需求",
+    "compute demand"
+   ],
+   "edges": [
+    {
+     "to": "ST-CHIP-CONCENTRATION",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.85,
+     "mechanism": "需求集中於少數能供應先進製程與封裝的廠商",
+     "evidence": "已實現",
+     "breaks_if": "製程競爭者追上"
+    },
+    {
+     "to": "CH-ELEC-COST",
+     "sign": 1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.7,
+     "mechanism": "算力即用電",
+     "evidence": "已實現",
+     "breaks_if": "效率提升抵消"
+    },
+    {
+     "to": "ST-EFFICIENCY-GAIN",
+     "sign": 1,
+     "lag_months": [
+      12,
+      36
+     ],
+     "confidence": 0.7,
+     "mechanism": "成本與供給壓力驅動效率研發（負回饋）",
+     "evidence": "已實現 — 推論成本持續下降",
+     "breaks_if": "無進一步效率空間"
+    }
+   ],
+   "_counter": "**Jevons 悖論在這裡是雙向的。** 效率提升會降低單位算力成本，但也會讓更多應用變得可行，總需求可能反而上升。所以 ST-EFFICIENCY-GAIN 對這個節點的抑制邊信心只給 0.40——**方向甚至可能是錯的。**"
+  },
+  {
+   "id": "ST-DEDOLLAR",
+   "label": "儲備貨幣分散化",
+   "type": "state",
+   "domain": "政治",
+   "status": "進行中",
+   "aliases": [
+    "去美元化",
+    "dedollarization"
+   ],
+   "edges": [
+    {
+     "to": "OUT-GOLD",
+     "sign": 1,
+     "lag_months": [
+      12,
+      120
+     ],
+     "confidence": 0.45,
+     "mechanism": "央行以黃金替代部分美元資產",
+     "evidence": "已實現但規模有限",
+     "breaks_if": "央行購金放緩"
+    }
+   ],
+   "_counter": "這是整張圖裡最容易被過度解讀的節點。美元在全球外匯儲備與貿易結算的份額變化極為緩慢，多數「去美元化」敘事的時間尺度是數十年，不是數年。**放進圖裡是為了標示它的低信心與長時滯，不是為了支持它。**"
+  },
+  {
+   "id": "ST-DOMESTIC-SUBSIDY",
+   "label": "各國產業補貼競賽",
+   "type": "state",
+   "domain": "政治",
+   "status": "進行中",
+   "aliases": [
+    "產業補貼",
+    "晶片法案",
+    "產業政策"
+   ],
+   "edges": [
+    {
+     "to": "CH-CAPEX-DUPLICATE",
+     "sign": 1,
+     "lag_months": [
+      6,
+      36
+     ],
+     "confidence": 0.75,
+     "mechanism": "補貼驅動的重複產能",
+     "evidence": "已實現",
+     "breaks_if": "補貼未落實"
+    },
+    {
+     "to": "OUT-SEMI-STOCKS",
+     "sign": -1,
+     "lag_months": [
+      36,
+      84
+     ],
+     "confidence": 0.45,
+     "mechanism": "產能大幅擴張最終侵蝕議價能力（適應性反向）",
+     "evidence": "有先例 — 半導體週期史上多次",
+     "breaks_if": "需求成長吸收新增產能"
+    }
+   ],
+   "_counter": "**補貼建成的產能會在數年後同時到位，這是半導體週期的經典劇本。** 反向邊的時滯下界設在 36 個月是刻意的（G1 教訓）：晶圓廠從動土到量產約 3–5 年。"
+  },
+  {
+   "id": "ST-DUAL-SYSTEM",
+   "label": "技術與供應鏈雙軌化",
+   "type": "state",
+   "domain": "政治",
+   "status": "進行中",
+   "aliases": [
+    "雙軌化",
+    "脫鉤",
+    "技術分岔"
+   ],
+   "edges": [
+    {
+     "to": "CH-CAPEX-DUPLICATE",
+     "sign": 1,
+     "lag_months": [
+      12,
+      60
+     ],
+     "confidence": 0.65,
+     "mechanism": "兩套體系各自建設",
+     "evidence": "理論推導",
+     "breaks_if": "互通性維持"
+    },
+    {
+     "to": "OUT-GLOBAL-TRADE",
+     "sign": -1,
+     "lag_months": [
+      24,
+      84
+     ],
+     "confidence": 0.45,
+     "mechanism": "貿易密度下降",
+     "evidence": "理論推導 — 全球貿易佔 GDP 比重變化緩慢",
+     "breaks_if": "貿易轉向而非減少"
+    },
+    {
+     "to": "CH-RISK-PREMIUM",
+     "sign": 1,
+     "lag_months": [
+      12,
+      60
+     ],
+     "confidence": 0.4,
+     "mechanism": "制度不確定性上升",
+     "evidence": "理論推導",
+     "breaks_if": "制度化後不確定性反而下降"
+    }
+   ],
+   "_counter": "**「脫鉤」在資料上遠不如敘事上明顯。** 全球貿易佔 GDP 比重過去數年並未顯著下滑，多數變化是**流向重組**而非**總量萎縮**。這個節點的所有下游邊信心都壓在 0.45 以下，反映的是敘事與資料之間的落差。"
+  },
+  {
+   "id": "ST-EFFICIENCY-GAIN",
+   "label": "演算法與硬體效率提升",
+   "type": "state",
+   "domain": "AI",
+   "status": "進行中",
+   "aliases": [
+    "效率提升",
+    "推論成本下降"
+   ],
+   "edges": [
+    {
+     "to": "ST-COMPUTE-DEMAND",
+     "sign": -1,
+     "lag_months": [
+      12,
+      36
+     ],
+     "confidence": 0.4,
+     "mechanism": "同樣能力需要更少算力",
+     "evidence": "理論推導 — 但 Jevons 悖論方向可能相反",
+     "breaks_if": "總需求隨可行應用擴張而上升"
+    },
+    {
+     "to": "OUT-ELEC-PRICE",
+     "sign": -1,
+     "lag_months": [
+      18,
+      48
+     ],
+     "confidence": 0.35,
+     "mechanism": "單位運算耗電下降",
+     "evidence": "理論推導",
+     "breaks_if": "總量成長蓋過效率"
+    }
+   ],
+   "_counter": "**這條反向邊的方向本身就不確定。** 歷史上效率提升經常擴大而非縮小總消耗（Jevons 悖論）。我把它放進圖裡並給低信心，是為了標示「這裡有一股方向未定的力量」，不是為了主張它會壓低需求。"
+  },
+  {
+   "id": "ST-EXCESS-CAPACITY",
+   "label": "中國產能外溢",
+   "type": "state",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "產能過剩",
+    "低價出口",
+    "通縮輸出"
+   ],
+   "edges": [
+    {
+     "to": "OUT-US-CPI",
+     "sign": -1,
+     "lag_months": [
+      6,
+      30
+     ],
+     "confidence": 0.5,
+     "mechanism": "低價進口品壓抑商品通膨（重要反向力量）",
+     "evidence": "已實現 — 多國進口物價下降",
+     "breaks_if": "關稅抵消價格優勢"
+    },
+    {
+     "to": "CH-TRADE-COST",
+     "sign": -1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.4,
+     "mechanism": "出口商讓價吸收部分關稅",
+     "evidence": "有先例",
+     "breaks_if": "無讓價空間"
+    }
+   ],
+   "_counter": "**這是整張美中子圖裡最容易被忽略的力量：對抗的一個後果是通縮輸出，不是通膨。** 主流敘事幾乎都聚焦在「脫鉤推升成本」，但產能外溢的方向相反。兩股力量同時存在，圖裡都有——**淨效果是實證問題，不是敘事問題。**"
+  },
+  {
+   "id": "ST-EXPORT-CONTROL",
+   "label": "半導體出口管制",
+   "type": "state",
+   "domain": "政治",
+   "status": "進行中",
+   "aliases": [
+    "出口管制",
+    "晶片管制",
+    "export control"
+   ],
+   "edges": [
+    {
+     "to": "ST-MODEL-COMMODITIZE",
+     "sign": 1,
+     "lag_months": [
+      12,
+      48
+     ],
+     "confidence": 0.45,
+     "mechanism": "受限方轉向效率路線與開源生態",
+     "evidence": "理論推導 — 已有跡象但因果難分",
+     "breaks_if": "受限方無法追上"
+    },
+    {
+     "to": "OUT-SEMI-STOCKS",
+     "sign": -1,
+     "lag_months": [
+      0,
+      18
+     ],
+     "confidence": 0.4,
+     "mechanism": "市場被切割，部分營收失去",
+     "evidence": "已實現 — 特定廠商中國營收下滑",
+     "breaks_if": "豁免或替代市場補足"
+    }
+   ],
+   "_counter": "管制的效果高度不確定，而且可能與意圖相反：它同時抑制對手取得算力、又逼對手往效率與開源方向走。**俄烏子圖的制裁節點給過一模一樣的教訓——制裁沒讓俄油退出市場，只改變了流向與價差。**"
+  },
+  {
+   "id": "ST-HORMUZ-DISRUPTION",
+   "label": "荷姆茲海峽通行受阻",
+   "type": "state",
+   "domain": "能源",
+   "status": "進行中",
+   "aliases": [
+    "荷姆茲海峽",
+    "荷姆茲受阻",
+    "strait of hormuz"
+   ],
+   "edges": [
+    {
+     "to": "OUT-OIL-PRICE",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.8,
+     "mechanism": "全球約五分之一石油液體消費須經此水道；沙國 East-West 與阿聯 Fujairah 繞道管線合計運能遠低於通過量，短期無等量替代",
+     "evidence": "有先例",
+     "breaks_if": "替代管線與協調釋儲補足缺口"
+    },
+    {
+     "to": "CH-SHIPPING-COST",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.7,
+     "mechanism": "波灣裝運船舶的航程風險、待泊與繞行時間上升",
+     "evidence": "有先例",
+     "breaks_if": "通行恢復"
+    },
+    {
+     "to": "CH-ENERGY-SUPPLY",
+     "sign": 1,
+     "lag_months": [
+      0,
+      9
+     ],
+     "confidence": 0.6,
+     "mechanism": "全球約五分之一 LNG 貿易經荷姆茲（主要卡達），而歐洲自 2022 年後對 LNG 進口的依賴顯著上升",
+     "evidence": "有先例",
+     "breaks_if": "歐洲 LNG 來源已充分轉向大西洋盆地"
+    },
+    {
+     "to": "ST-SPR-DEMAND",
+     "sign": 1,
+     "lag_months": [
+      2,
+      12
+     ],
+     "confidence": 0.7,
+     "mechanism": "供給錯配本身觸發協調釋儲與需求端政策反應（負回饋）",
+     "evidence": "有先例",
+     "breaks_if": "政治上無法釋儲且需求無彈性"
+    },
+    {
+     "to": "CH-INPUT-COST",
+     "sign": 1,
+     "lag_months": [
+      1,
+      12
+     ],
+     "confidence": 0.55,
+     "mechanism": "能源是工業與農業核心投入，波灣供給錯配經到岸成本進入投入面",
+     "evidence": "理論推導",
+     "breaks_if": "能源價格未實質上升"
+    }
+   ],
+   "_counter": "**指向 ST-SPR-DEMAND 那條邊是正向的，但它指向一個負回饋節點。** ST-SPR-DEMAND 既有的兩條出邊（→ OUT-OIL-PRICE −1、→ OUT-EU-GAS-PRICE −1）是負向的，所以荷姆茲受阻**同時**產生「推升油價」與「經釋儲／需求破壞壓低油價」兩條方向相反、時滯不同的路徑。時滯刻意錯開（主推力 0–6 個月、負回饋 2–12 個月）——這是 G1 的教訓：混在一起淨計會錯過「先漲後回」這個真實型態。\n\n**替代管線的運能可能被低估。** 沙國 East-West 與阿聯 Fujairah 的繞道運能相對通過量是小的，但兩者確實存在且戰時會被優先使用。指向 OUT-OIL-PRICE 給 0.80 已考慮這點；若這條線出錯，最可能的錯法是**幅度高估**而非方向錯。\n\n**指向 CH-ENERGY-SUPPLY 借用了一個語意是「歐洲」的節點。** 該節點既有的邊全部建在俄歐天然氣機制上。這裡指向它是合理的（卡達 LNG 經荷姆茲供歐），但**不得反過來拿 CH-ENERGY-SUPPLY 當荷姆茲事件的入口**——那等於改寫節點定義，2026-08-14 已判定過一次。\n\n**地區異質性未處理。** 荷姆茲受阻對亞洲（尤其中、印、日、韓）的衝擊遠大於對美國；圖用單一 OUT-OIL-PRICE 節點代表全球油價是重大簡化。這是 G1 就發現、至今未解的結構性缺陷。"
+  },
+  {
+   "id": "ST-INFO-WAR",
+   "label": "資訊戰與敘事分裂",
+   "type": "state",
+   "domain": "媒體",
+   "status": "進行中",
+   "aliases": [
+    "資訊戰",
+    "認知作戰",
+    "假訊息"
+   ],
+   "edges": [
+    {
+     "to": "S3-信念離散度上升",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.25,
+     "mechanism": "同一事件在不同資訊圈得到不相容的描述",
+     "evidence": "理論推導 — V6 已檢驗 S3，結果為證據混雜",
+     "breaks_if": "跨國或個股層級證據顯示媒體碎片化與離散度無關"
+    }
+   ],
+   "_counter": "**2026-08-14 依 V6 結果下修（0.45 → 0.25）。** V6 檢驗了「媒體碎片化 → 離散度上升」這個機制類別：現象層有支持（1960–2026 長期趨勢顯著），但**時間點對不上**——轉折發生在 1990 年代，2005 年後（社群媒體時代）沒有趨勢。這條邊講的正是 V6 沒能支持的那個機制，所以宣告信心必須實質下修，而不只是被上限壓住。"
+  },
+  {
+   "id": "ST-LNG-SUBST",
+   "label": "LNG 替代與接收站擴建",
+   "type": "state",
+   "domain": "能源",
+   "status": "進行中",
+   "aliases": [
+    "lng 替代",
+    "液化天然氣"
+   ],
+   "edges": [
+    {
+     "to": "OUT-EU-GAS-PRICE",
+     "sign": -1,
+     "lag_months": [
+      12,
+      30
+     ],
+     "confidence": 0.8,
+     "mechanism": "替代氣源補足缺口（接收站需先建成）",
+     "evidence": "已實現 — 2023 TTF 回落至戰前附近",
+     "breaks_if": "LNG 產能瓶頸"
+    },
+    {
+     "to": "OUT-US-LNG-EXPORT",
+     "sign": 1,
+     "lag_months": [
+      3,
+      24
+     ],
+     "confidence": 0.85,
+     "mechanism": "歐洲需求拉動美國出口與新建產能",
+     "evidence": "已實現",
+     "breaks_if": "出口設施審批受阻"
+    }
+   ],
+   "_counter": ""
+  },
+  {
+   "id": "ST-MARINE-WAR-RISK",
+   "label": "船舶戰爭風險保費上升",
+   "type": "state",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "戰險保費",
+    "戰爭風險保險",
+    "war risk premium"
+   ],
+   "edges": [
+    {
+     "to": "CH-SHIPPING-COST",
+     "sign": 1,
+     "lag_months": [
+      0,
+      3
+     ],
+     "confidence": 0.85,
+     "mechanism": "戰險保費直接計入航次成本",
+     "evidence": "已實現",
+     "breaks_if": "保費回落"
+    }
+   ],
+   "_counter": "**戰險保費是整條航道鏈上反應最快、也最快回落的一段。** 它按航次計價、可隨風險評估逐週重訂，所以它既是最早的訊號，也是最不具持續性的。信心給 0.85 反映的是**傳導機制本身幾乎是定義關係**（保費直接計入航次成本），不是反映它的效果會持久。\n\n**保費佔總航次成本的比重，在多數航線上其實不高。** 對高價值貨物（貨櫃）影響有限，對低價值大宗（原油、穀物）影響相對顯著。圖用單一節點指向單一 CH-SHIPPING-COST，**沒有處理這種貨種異質性**。\n\n**本節點與 ST-REDSEA-REROUTE、ST-HORMUZ-DISRUPTION 三條指向 CH-SHIPPING-COST 的路徑共用底層機制。** 引擎對同一結果的多條同向路徑取 max 不取 sum，正是為了避免共用機制被重複計入——**但讀的人很容易把三條路徑當成三份獨立證據。**"
+  },
+  {
+   "id": "ST-MODEL-COMMODITIZE",
+   "label": "模型能力商品化",
+   "type": "state",
+   "domain": "AI",
+   "status": "進行中",
+   "aliases": [
+    "開源模型",
+    "模型商品化",
+    "能力追趕"
+   ],
+   "edges": [
+    {
+     "to": "OUT-SEMI-STOCKS",
+     "sign": -1,
+     "lag_months": [
+      12,
+      36
+     ],
+     "confidence": 0.4,
+     "mechanism": "若模型層不賺錢，算力採購的持續性受質疑",
+     "evidence": "理論推導",
+     "breaks_if": "推論需求成長蓋過"
+    },
+    {
+     "to": "OUT-CORP-MARGINS",
+     "sign": 1,
+     "lag_months": [
+      12,
+      48
+     ],
+     "confidence": 0.4,
+     "mechanism": "使用者端以低成本取得能力，成本下降",
+     "evidence": "理論推導",
+     "breaks_if": "能力仍集中於少數供應商"
+    },
+    {
+     "to": "L4-集中化vs碎片化",
+     "sign": -1,
+     "lag_months": [
+      12,
+      60
+     ],
+     "confidence": 0.45,
+     "mechanism": "開源普及推向碎片化那一端",
+     "evidence": "理論推導 — L4 在沙盤中標為難以檢驗",
+     "breaks_if": "前沿與開源差距重新拉大"
+    }
+   ],
+   "_counter": "**這個節點與 [[L4-集中化vs碎片化]] 是同一個問題的兩個面向**，但沙盤把 L4 標為「難以檢驗」，所以那條邊的上限是 0.35。這是刻意的：跨層的邊不應該比它指向的節點更確定。"
+  },
+  {
+   "id": "ST-POWER-BUILD",
+   "label": "發電與電網投資回應",
+   "type": "state",
+   "domain": "能源",
+   "status": "進行中",
+   "aliases": [
+    "電網投資",
+    "發電擴建"
+   ],
+   "edges": [
+    {
+     "to": "OUT-ELEC-PRICE",
+     "sign": -1,
+     "lag_months": [
+      24,
+      60
+     ],
+     "confidence": 0.6,
+     "mechanism": "供給到位後緩解短缺",
+     "evidence": "有先例 — 但電網建設週期以年計",
+     "breaks_if": "審批、選址、設備交期卡住"
+    },
+    {
+     "to": "OUT-COPPER",
+     "sign": 1,
+     "lag_months": [
+      12,
+      48
+     ],
+     "confidence": 0.6,
+     "mechanism": "電網建設本身極度用銅",
+     "evidence": "有先例",
+     "breaks_if": "建設遞延"
+    }
+   ],
+   "_counter": "**時滯下界設在 24 個月是刻意的（G1 教訓）。** 電廠與電網的規劃、審批、選址、施工、併網動輒 3–7 年。寫「開始存在」的時間會讓這條反向邊在錯誤的時間層壓過主推力——俄烏子圖的 LNG 替代邊就是這樣錯的。"
+  },
+  {
+   "id": "ST-POWER-CONSTRAINT",
+   "label": "電力與電網成為瓶頸",
+   "type": "state",
+   "domain": "能源",
+   "status": "進行中",
+   "aliases": [
+    "電力瓶頸",
+    "併網排隊",
+    "電網限制"
+   ],
+   "edges": [
+    {
+     "to": "OUT-ELEC-PRICE",
+     "sign": 1,
+     "lag_months": [
+      6,
+      30
+     ],
+     "confidence": 0.65,
+     "mechanism": "尖峰需求增加且供給短期無彈性",
+     "evidence": "有先例 — 部分電網區已出現批發電價上升",
+     "breaks_if": "需求成長低於預期"
+    },
+    {
+     "to": "ST-POWER-BUILD",
+     "sign": 1,
+     "lag_months": [
+      12,
+      36
+     ],
+     "confidence": 0.75,
+     "mechanism": "價格與短缺訊號觸發發電與電網投資（負回饋）",
+     "evidence": "有先例 — 各國已宣布擴建計畫",
+     "breaks_if": "審批與供應鏈瓶頸卡住"
+    },
+    {
+     "to": "OUT-COPPER",
+     "sign": 1,
+     "lag_months": [
+      6,
+      36
+     ],
+     "confidence": 0.55,
+     "mechanism": "電網與資料中心用銅密集",
+     "evidence": "理論推導 — 需求增量相對全球銅市規模仍小",
+     "breaks_if": "替代材料或需求不如預期"
+    },
+    {
+     "to": "OUT-POWER-UTIL",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.7,
+     "mechanism": "受規管電力商的資產基礎擴張",
+     "evidence": "已實現 — 2024-2026 電力類股重評價",
+     "breaks_if": "監管不允許費率轉嫁"
+    }
+   ],
+   "_counter": "**電力瓶頸有很強的地區性，這張圖沒有處理。** 同樣是「資料中心用電」，在電力過剩的地區幾乎沒有價格影響，在已經緊繃的電網區則影響很大。這是 G1 就發現、至今未解的結構性缺陷（地區異質性）。"
+  },
+  {
+   "id": "ST-REDSEA-REROUTE",
+   "label": "紅海—曼德海峽繞道",
+   "type": "state",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "紅海繞道",
+    "曼德海峽",
+    "好望角繞道",
+    "bab el-mandeb"
+   ],
+   "edges": [
+    {
+     "to": "CH-SHIPPING-COST",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.8,
+     "mechanism": "繞行好望角使亞—歐航程增加約 3,000–3,500 海里、約 10–14 天，等同實質運能減少",
+     "evidence": "已實現",
+     "breaks_if": "紅海航線恢復通行"
+    }
+   ],
+   "_counter": "**繞道的成本效果會被運力重新配置吸收，而圖沒有把這條適應性反向邊建出來。** 2023–24 年紅海攻擊後的經驗是：運價在數週內飆升，隨後隨著船東調度、加開航次與新船交付而回落，即使繞道本身仍在持續。**所以這條邊的方向可靠、持續性不可靠。** **這是已知缺口**：要正確表達需要一條時滯 12–36 個月的負向邊指回 CH-SHIPPING-COST，但那條邊的信心目前無法誠實估計，故未建。\n\n**繞道不等於斷供。** 好望角航線是可用的，只是更慢更貴；與荷姆茲「無等量替代」的性質不同。把兩者當成同一類衝擊會高估紅海這條線的嚴重度。\n\n**本節點只建一條出邊是刻意的。** 繞道的其他效果（碳排、港口壅塞、船期可靠度）目前在圖中都沒有對應節點，硬接會變成發明節點。"
+  },
+  {
+   "id": "ST-RU-ENERGY-REROUTE",
+   "label": "俄羅斯能源轉向亞洲折價銷售",
+   "type": "state",
+   "domain": "能源",
+   "status": "進行中",
+   "aliases": [
+    "俄油轉向",
+    "urals 折價"
+   ],
+   "edges": [
+    {
+     "to": "OUT-OIL-PRICE",
+     "sign": -1,
+     "lag_months": [
+      9,
+      24
+     ],
+     "confidence": 0.55,
+     "mechanism": "供給並未真正退出市場，只是流向改變（買家與航運需先重組）",
+     "evidence": "已實現 — 俄出口量維持",
+     "breaks_if": "制裁執行大幅收緊"
+    }
+   ],
+   "_counter": "這是整張圖裡最重要的反向邊之一。2022 年初市場普遍預期俄油退出會造成永久性供給缺口，實際上並沒有。"
+  },
+  {
+   "id": "ST-RU-EXPORT-INFRA-DAMAGE",
+   "label": "俄羅斯能源出口與煉油設施實體受損",
+   "type": "state",
+   "domain": "能源",
+   "status": "進行中",
+   "aliases": [
+    "俄油港受損",
+    "煉油廠被炸",
+    "Novorossiysk",
+    "俄羅斯出口設施"
+   ],
+   "edges": [
+    {
+     "to": "OUT-OIL-PRICE",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.55,
+     "mechanism": "Novorossiysk 單一港口原油出口約 2.3 Mbd（Kpler, 2025-10），裝載中斷使該部分供給短期無法出海",
+     "evidence": "有先例",
+     "breaks_if": "快速修復，或改由波羅的海與 ESPO 出海"
+    },
+    {
+     "to": "ST-RU-ENERGY-REROUTE",
+     "sign": -1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.5,
+     "mechanism": "轉向亞洲的折價銷售同樣依賴黑海與波羅的海的裝運能力；裝載受阻會同時限制轉向量",
+     "evidence": "理論推導",
+     "breaks_if": "陸路管線（ESPO）吸收轉向量"
+    },
+    {
+     "to": "CH-GRAIN-SUPPLY",
+     "sign": 1,
+     "lag_months": [
+      0,
+      9
+     ],
+     "confidence": 0.6,
+     "mechanism": "Novorossiysk 同時是俄羅斯最大穀物出口港，三個穀物碼頭（NKHP、NZT、KSK）合計年運能逾 2,000 萬噸，其中 NKHP 單座 710 萬噸；該國上一季海運穀物出口 5,270 萬噸，其中經亞速—黑海盆地 4,630 萬噸、佔其海運穀物 88%，而黑海與亞速海港口原佔全部穀物出口 70%；油品與穀物裝載受同一組港口作業限制",
+     "evidence": "已實現",
+     "breaks_if": "Delo Group 與 Demetra 的碼頭在 NKHP 修復期內回到常態吞吐，或 Tuapse、波羅的海與陸路路線補足 NKHP 的 710 萬噸缺口"
+    }
+   ],
+   "_counter": "**第二條邊（→ ST-RU-ENERGY-REROUTE，sign −1）是全圖少數會削弱既有反向力量的邊，要特別小心。** ST-RU-ENERGY-REROUTE 記錄了「制裁沒讓俄油退出市場，只改變流向與價差」這個 2022 年被大幅高估的教訓。本節點宣稱實體破壞會**限制轉向能力**，等於部分抵消那條教訓。**信心刻意壓在 0.50、證據等級誠實標為理論推導**：陸路管線（ESPO）與波羅的海港口確實可以吸收相當部分的轉向量，這條邊有可能根本不成立。\n\n**修復速度是這個節點最大的不確定來源，而圖無法表達它。** 油港泊位與煉油裝置的修復期從數天到數月不等，取決於命中位置。同一個「被打擊」事件，修復三天與修復三個月的下游效果差一個量級，**圖只有一條邊、一組時滯**。\n\n**穀物那條邊的參數於 2026-08-25 依提案調整**（`claude/G3-調參提案-2026-08-25.md`，時間戳 2026-08-25T14:57:10Z，Wendy 核可）。原為 conf 0.45／理論推導／「估佔俄穀物出口 15–20%」，來源是次級商業網站。2026-08 的事實把三項都推翻了：Novorossiysk 三座穀物碼頭（NKHP、NZT、KSK，合計年吞吐約 2,500 萬噸）全部停擺，約當俄羅斯海運穀物出口的 40–50%；原 breaks_if「穀物泊位與油品泊位實際互不影響」**已被證偽**——兩者同時停。evidence 改為已實現，**等於移除這條邊的認識論上限保護**（0.50 → 1.00），所以 confidence 只給 0.70 而非更高，保留三個尚未排除的機制緩衝：**Tuapse 仍在運作**、2026 年約 1.4 億噸強收成、以及**停擺持續時間未知而圖只有一組時滯**。來源等級為產業權威（SovEcon、俄羅斯穀物聯盟），仍非 USDA／IGC 官方統計。\n\n**單一港口的集中度可能被高估。** Novorossiysk 重要，但俄羅斯尚有 Primorsk、Ust-Luga（波羅的海）與 Kozmino（ESPO／太平洋）等出口路徑。**「打掉一個港口 = 抽走等量出口」是錯的**——實際效果取決於其他港口的閒置運能，而圖沒有表達這個緩衝。\n\n**本次（2026-09-01 提案）調整**：confidence 0.70→0.60、mechanism 的運能數字改為與來源一致的「逾 2,000 萬噸」並移除推算出來的份額、breaks_if 改寫；evidence、sign、lag_months 刻意不動。起因是 2026-08-26 NKHP 的陳述顯示損害不均：NKHP（710 萬噸／年）重損、修復最長 4 個月，Demetra 的碼頭損害較輕，Delo Group 的未受損——長期受阻量約當全國海運 13%，而非四到五成。**0.60 這個數字是 Lucas 編出來的判斷，不是任何來源的估計**，Wendy 於 2026-09-01 核可時要求明確標註此點。原本寫的「約 2,500 萬噸／40-50%」在來源中找不到，來源說的是逾 2,000 萬噸；運能與吞吐的口徑不同，故本次不寫任何推算出來的百分比。提案見 claude/G3-調參提案-2026-09-01.md（凍結於 2026-09-01T22:55:43Z）。"
+  },
+  {
+   "id": "ST-RU-GAS-CUT",
+   "label": "俄羅斯對歐天然氣供應削減",
+   "type": "state",
+   "domain": "能源",
+   "status": "已發生",
+   "aliases": [
+    "北溪",
+    "俄羅斯斷氣",
+    "天然氣減供"
+   ],
+   "edges": [
+    {
+     "to": "CH-ENERGY-SUPPLY",
+     "sign": 1,
+     "lag_months": [
+      0,
+      3
+     ],
+     "confidence": 0.95,
+     "mechanism": "歐洲最大單一氣源退出",
+     "evidence": "已實現",
+     "breaks_if": "管線恢復輸送"
+    },
+    {
+     "to": "ST-LNG-SUBST",
+     "sign": 1,
+     "lag_months": [
+      3,
+      18
+     ],
+     "confidence": 0.85,
+     "mechanism": "歐洲轉向美國與卡達 LNG 並加建接收站",
+     "evidence": "已實現 — 2022-23 歐洲 LNG 進口創高",
+     "breaks_if": "LNG 供給無法擴張"
+    },
+    {
+     "to": "OUT-EU-RENEW-CAPEX",
+     "sign": 1,
+     "lag_months": [
+      6,
+      36
+     ],
+     "confidence": 0.75,
+     "mechanism": "能源安全成為政治優先，加速再生能源與電網投資",
+     "evidence": "已實現 — REPowerEU",
+     "breaks_if": "政策轉向或財政受限"
+    }
+   ],
+   "_counter": "這條邊的短期強度極高，但它同時觸發了兩股強力的反向力量（LNG 替代、再生能源投資），使得中期效果反轉——2023 年歐洲天然氣價格已回落至戰前水準附近。**衝擊越大，誘發的適應反應也越大。**"
+  },
+  {
+   "id": "ST-SANCTIONS",
+   "label": "西方對俄金融與能源制裁",
+   "type": "state",
+   "domain": "政治",
+   "status": "進行中",
+   "aliases": [
+    "對俄制裁",
+    "制裁俄羅斯",
+    "sanctions russia"
+   ],
+   "edges": [
+    {
+     "to": "ST-RU-ENERGY-REROUTE",
+     "sign": 1,
+     "lag_months": [
+      1,
+      9
+     ],
+     "confidence": 0.85,
+     "mechanism": "俄油氣轉向中印等買家並以折價成交",
+     "evidence": "已實現 — Urals 對 Brent 折價擴大",
+     "breaks_if": "制裁解除"
+    },
+    {
+     "to": "CH-ENERGY-SUPPLY",
+     "sign": 1,
+     "lag_months": [
+      0,
+      6
+     ],
+     "confidence": 0.7,
+     "mechanism": "西方自我限制採購造成短期供給錯配",
+     "evidence": "已實現",
+     "breaks_if": "替代供給到位"
+    },
+    {
+     "to": "OUT-GOLD",
+     "sign": 1,
+     "lag_months": [
+      0,
+      12
+     ],
+     "confidence": 0.55,
+     "mechanism": "央行資產遭凍結促使部分國家分散儲備至黃金",
+     "evidence": "有先例 — 2022 後各國央行購金創高",
+     "breaks_if": "儲備體系信任未受影響"
+    },
+    {
+     "to": "ST-DEDOLLAR",
+     "sign": 1,
+     "lag_months": [
+      6,
+      60
+     ],
+     "confidence": 0.4,
+     "mechanism": "非西方國家尋求降低美元結算依賴",
+     "evidence": "理論推導 — 進展緩慢且規模有限",
+     "breaks_if": "美元結算份額維持穩定"
+    }
+   ],
+   "_counter": "制裁的能源效果被大幅高估過。俄羅斯原油出口量在制裁後並未崩跌，只是流向改變、折價擴大。對全球供給總量的影響遠小於對價差結構的影響。"
+  },
+  {
+   "id": "ST-SPR-DEMAND",
+   "label": "戰略儲備釋出與需求破壞",
+   "type": "state",
+   "domain": "能源",
+   "status": "已發生",
+   "aliases": [
+    "戰略儲備",
+    "spr",
+    "需求破壞"
+   ],
+   "edges": [
+    {
+     "to": "OUT-OIL-PRICE",
+     "sign": -1,
+     "lag_months": [
+      4,
+      18
+     ],
+     "confidence": 0.7,
+     "mechanism": "供給增加與需求減少同時作用（需求破壞需時累積）",
+     "evidence": "已實現 — 2022H2 油價回落",
+     "breaks_if": "儲備耗盡且需求剛性"
+    },
+    {
+     "to": "OUT-EU-GAS-PRICE",
+     "sign": -1,
+     "lag_months": [
+      6,
+      24
+     ],
+     "confidence": 0.65,
+     "mechanism": "工業減產與家庭節能降低用氣（行為調整需時）",
+     "evidence": "已實現 — 歐洲工業用氣顯著下降",
+     "breaks_if": "需求無彈性"
+    }
+   ],
+   "_counter": "需求破壞是雙面刃：它壓低價格，但方式是透過抑制實體經濟活動。價格回落本身可能是壞消息。"
+  },
+  {
+   "id": "ST-SUPPLY-RELOCATE",
+   "label": "供應鏈重組",
+   "type": "state",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "供應鏈重組",
+    "近岸外包",
+    "友岸外包",
+    "去風險"
+   ],
+   "edges": [
+    {
+     "to": "CH-CAPEX-DUPLICATE",
+     "sign": 1,
+     "lag_months": [
+      6,
+      36
+     ],
+     "confidence": 0.7,
+     "mechanism": "同樣的產能要蓋兩次",
+     "evidence": "已實現",
+     "breaks_if": "移轉為既有產能利用"
+    },
+    {
+     "to": "CH-TRADE-COST",
+     "sign": 1,
+     "lag_months": [
+      6,
+      30
+     ],
+     "confidence": 0.55,
+     "mechanism": "新產地的效率與規模較低",
+     "evidence": "理論推導",
+     "breaks_if": "新產地效率相當"
+    },
+    {
+     "to": "CH-RISK-PREMIUM",
+     "sign": -1,
+     "lag_months": [
+      24,
+      60
+     ],
+     "confidence": 0.45,
+     "mechanism": "多來源降低單點失效風險（適應性反向）",
+     "evidence": "理論推導 — 需數年才建成",
+     "breaks_if": "轉單但未真正分散"
+    }
+   ],
+   "_counter": "**轉單不等於脫鉤。** 對美出口來源改變的同時，那些新來源國對中國中間財的依賴上升。所以這個節點抑制風險的效果很可能被高估——真正的分散要看**增值來源**而非**出口地**。"
+  },
+  {
+   "id": "ST-TASK-SUBSTITUTION",
+   "label": "特定白領任務被替代",
+   "type": "state",
+   "domain": "經濟",
+   "status": "進行中",
+   "aliases": [
+    "任務替代",
+    "白領替代",
+    "工作自動化"
+   ],
+   "edges": [
+    {
+     "to": "OUT-WHITE-COLLAR-JOBS",
+     "sign": -1,
+     "lag_months": [
+      12,
+      48
+     ],
+     "confidence": 0.45,
+     "mechanism": "入門職缺最先受影響",
+     "evidence": "理論推導 — 目前證據混雜且難與景氣區分",
+     "breaks_if": "需求擴張吸收釋出的勞動力"
+    },
+    {
+     "to": "CH-LABOR-COST",
+     "sign": -1,
+     "lag_months": [
+      18,
+      60
+     ],
+     "confidence": 0.4,
+     "mechanism": "議價能力下降抑制工資成長",
+     "evidence": "理論推導",
+     "breaks_if": "勞動市場仍緊俏"
+    },
+    {
+     "to": "CH-PRODUCTIVITY",
+     "sign": 1,
+     "lag_months": [
+      12,
+      60
+     ],
+     "confidence": 0.45,
+     "mechanism": "單位產出所需人時下降",
+     "evidence": "理論推導",
+     "breaks_if": "組織調整跟不上"
+    }
+   ],
+   "_counter": "**這是整張圖裡最容易被過度解讀的節點。** 入門職缺減少同時可以用升息、後疫情正常化、產業週期解釋，而且這幾個解釋在時間上高度重疊。**要把 AI 的貢獻分離出來，需要的識別策略目前沒有人有。** 這跟沙盤 [[S5-情緒與支出脫鉤]] 死掉的原因是同一類：現象存在，歸因無法識別。"
+  },
+  {
+   "id": "ST-TW-CONCENTRATION",
+   "label": "先進製程的地理集中",
+   "type": "state",
+   "domain": "AI",
+   "status": "已發生",
+   "aliases": [
+    "台灣集中度",
+    "先進製程集中"
+   ],
+   "edges": [
+    {
+     "to": "CH-RISK-PREMIUM",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.55,
+     "mechanism": "單點失效風險被市場認知",
+     "evidence": "已實現 — 已進入主要機構的風險報告",
+     "breaks_if": "風險被視為已定價"
+    },
+    {
+     "to": "OUT-SEMI-STOCKS",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.45,
+     "mechanism": "不可替代性支撐議價能力",
+     "evidence": "已實現",
+     "breaks_if": "替代產能建成"
+    },
+    {
+     "to": "OUT-TW-EQUITY",
+     "sign": 1,
+     "lag_months": [
+      0,
+      24
+     ],
+     "confidence": 0.5,
+     "mechanism": "樞紐地位支撐本地企業獲利",
+     "evidence": "已實現",
+     "breaks_if": "地位被稀釋"
+    }
+   ],
+   "_counter": "**集中度同時是獲利來源與風險來源**——與 AI 子圖 `ST-CHIP-CONCENTRATION` 的結構完全相同。任何只講其中一面的分析都不完整。"
+  },
+  {
+   "id": "ST-UA-FARMLAND",
+   "label": "烏克蘭農業產能受損",
+   "type": "state",
+   "domain": "糧食",
+   "status": "進行中",
+   "aliases": [
+    "烏克蘭農業",
+    "烏克蘭減產"
+   ],
+   "edges": [
+    {
+     "to": "CH-GRAIN-SUPPLY",
+     "sign": 1,
+     "lag_months": [
+      6,
+      36
+     ],
+     "confidence": 0.85,
+     "mechanism": "實質產能下降而非僅運輸受阻",
+     "evidence": "已實現",
+     "breaks_if": "戰後重建與排雷完成"
+    }
+   ],
+   "_counter": "產能損失是漸進且部分可逆的。全球供給也會透過其他產區增產回應——2022-23 年俄羅斯本身小麥豐收，相當程度抵消了烏克蘭的減產。"
+  }
+ ],
+ "epistemic": {
+  "evidence_caps": {
+   "已實現": 1.0,
+   "有先例": 0.75,
+   "理論推導": 0.5
+  },
+  "status_caps": {
+   "事實": 1.0,
+   "進行中": 0.8,
+   "有支持": 0.75,
+   "證據混雜": 0.5,
+   "未檢驗": 0.45,
+   "難以檢驗": 0.35,
+   "自評最弱": 0.3,
+   "已證偽": 0.0
+  },
+  "nodes": {
+   "S0-分發權解體": "事實",
+   "S1-廣告餅重分配": "事實",
+   "S2-信任崩落": "事實",
+   "S3-信念離散度上升": "證據混雜",
+   "S4-敘事加速": "未檢驗",
+   "S5-情緒與支出脫鉤": "已證偽",
+   "S6-央行溝通失效": "未檢驗",
+   "S7-政策不確定性溢價": "未檢驗",
+   "S8-企業資本支出遞延": "自評最弱",
+   "S9-市場二階量改變": "證據混雜",
+   "L0-世代替換": "事實",
+   "L1-AI成為主要新聞介面": "進行中",
+   "L2-監管介入": "難以檢驗",
+   "L3-公共事實基礎侵蝕": "難以檢驗",
+   "L4-集中化vs碎片化": "難以檢驗",
+   "L5-長期市場均衡": "難以檢驗"
+  }
+ }
+}
