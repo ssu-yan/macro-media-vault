@@ -71,6 +71,52 @@ def load_fred(code):
     return s
 
 
+# 預先登記寫死的樣本起點。**這是護欄，不是判準**——
+# 它只確認拿到的資料真的涵蓋預先登記所說的期間，不改變任何假說或門檻。
+#
+# 為什麼要有它：2026-09-04 第一次下載時，T5YIFR 與 T10YIE 只拿到
+# 2021-09 起的 61 個月（FRED 的圖預設只顯示近 5 年，DOWNLOAD 會跟著那個範圍走）。
+# 60 個月的滾動視窗只能產生 **2 個視窗**，主要規格與 H4 安慰劑都跑不了。
+# 若沒有這道護欄，腳本會安靜地在 2 個視窗上算出一組毫無意義的 t 值。
+#
+# 這與 V1 的 PCEC96 是同一種失敗：**檔案存在、格式正確、程式跑得動，只是序列被截斷了。**
+# 那一次的截斷產生了一個**方向相反**的結論。
+REQUIRED_START = {
+    "MICH": "1985-01",
+    "T5YIFR": "2003-06",
+    "T10YIE": "2003-06",
+    "EXPINF1YR": "1985-01",
+    "CPIAUCSL": "1985-01",
+}
+
+
+def check_coverage(series_map):
+    bad = []
+    for code, s in series_map.items():
+        need = pd.Timestamp(REQUIRED_START[code])
+        if s.index.min() > need:
+            bad.append((code, s.index.min().date(), need.date(), len(s)))
+    if bad:
+        print()
+        print("=" * 78)
+        print("⛔ 停止：有序列的涵蓋期間短於預先登記所要求的樣本")
+        print("=" * 78)
+        print(f"{'序列':<12}{'實際起點':>12}{'需要不晚於':>14}{'月數':>8}{'60月視窗數':>12}")
+        print("-" * 78)
+        for code, got, need, n in bad:
+            print(f"{code:<12}{str(got):>12}{str(need):>14}{n:>8}{max(0, n - WINDOW + 1):>12}")
+        print("-" * 78)
+        print()
+        print("原因幾乎一定是：FRED 的圖預設只顯示近 5 年，DOWNLOAD 會跟著那個範圍走。")
+        print()
+        print("修法：到該序列的 FRED 頁面，把圖上方的**起始日期框**改成該序列的最早日期")
+        print("     （或按圖右上的時間範圍選單選 MAX），**再**按 DOWNLOAD → CSV。")
+        print()
+        print("⚠️ 這道檢查刻意讓腳本停下來，而不是在短樣本上算出一組沒有意義的數字。")
+        print("   V1 的 PCEC96 就是同一種失敗（序列被截斷），而那次產生了方向相反的結論。")
+        sys.exit(1)
+
+
 # ---------------- 統計工具（沿用 V1/V6 的 HAC 實作） ----------------
 
 def ols_hac(y, X, lag):
@@ -194,6 +240,9 @@ def main():
         print("請先從 FRED 下載這五個序列的 CSV 放進 scripts/data/：")
         print("  MICH / T5YIFR / T10YIE / EXPINF1YR / CPIAUCSL")
         sys.exit(1)
+
+    check_coverage({"MICH": mich, "T5YIFR": t5y, "T10YIE": t10,
+                    "EXPINF1YR": cle, "CPIAUCSL": cpi})
 
     # 已實現通膨波動（控制變數）：CPI 年增率的滾動標準差
     infl = cpi.pct_change(12) * 100
