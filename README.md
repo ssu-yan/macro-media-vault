@@ -73,7 +73,7 @@ python3 propagate.py --list          # 看所有節點
 | `sop/` | 範本、[[end-of-work-commit-check]] 收工檢查 |
 | `99-inbox/` | 隨手丟 |
 | `10-graph/` | **事件因果圖譜**：節點 + 傳導引擎 → [[README-圖譜規格]] |
-| `10-graph/G3-每週掃描協議-mirror-v3.8.md` | **G3 協議鏡像**（權威在 claude.ai Project，此為版控備份）→ 見下 |
+| `10-graph/G3-每週掃描協議-mirror-v3.9.md` | **G3 協議鏡像**（權威在 claude.ai Project，此為版控備份）→ 見下 |
 
 ---
 
@@ -116,11 +116,11 @@ git log origin/main..main --oneline   # 沒輸出 = 已全部推送
 ### G3 協議的版控（2026-09-02 新增）
 
 G3 每週掃描協議的**唯一執行依據**在 claude.ai Project「Macro economics」的
-`claude/G3-每週掃描協議.md`（現為 v3.8）——雲端排程 session 沒有裝置橋接、讀不到 vault，
+`claude/G3-每週掃描協議.md`（現為 v3.9）——雲端排程 session 沒有裝置橋接、讀不到 vault，
 所以那份必須自足。**要改規則，改那裡。**
 
 但 Project 上的檔案沒有版本控制、沒有備份、沒有 diff，2026-08-25 曾被一份舊草稿整份覆蓋。
-因此 `10-graph/G3-每週掃描協議-mirror-v3.8.md` 是納入 Git 的鏡像備份。
+因此 `10-graph/G3-每週掃描協議-mirror-v3.9.md` 是納入 Git 的鏡像備份。
 
 **維護規則**：每次在 Project 改完協議（版本號變動），把新版全文貼回鏡像檔並 commit，
 訊息寫 `G3 協議鏡像：vX.Y`。鏡像落後於 Project 時，以 Project 為準。
